@@ -1,0 +1,30 @@
+<div>
+  @if (authorization) {
+    <!--    {{ JSON.stringify(user) }}-->
+
+    {{ 'id: ' + user.id }}
+    <p></p>
+    {{ 'access_hash: ' + user.access_hash }}
+    <p></p>
+    {{ 'bot_id: ' + botUser.id }}
+    <p></p>
+    {{ 'bot_access_hash: ' + botUser.access_hash }}
+
+
+    <button (click)="startBot()">
+      Bot Start
+    </button>
+    <!--<button (click)="sendMessage()">
+      Message
+    </button>
+    <button (click)="startBot()">
+      Bot
+    </button>
+    <button (click)="getBotInfo()">
+      Bot Info
+    </button>-->
+      <!--    {{ user.first_name }}-->
+  } @else {
+    <app-authentication [isMobile]="isMobile"></app-authentication>
+  }
+</div>

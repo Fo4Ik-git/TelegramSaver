@@ -1,0 +1,60 @@
+<!--<h1>Telegram login</h1>
+<h2>Phone number</h2>
+
+<input #phoneNumber type="tel">
+<button (click)="onSendPhoneNumber(phoneNumber.value); phoneNumber.value = ''">Send Phone number</button>
+
+<h2>Telegram code</h2>
+<input #telegramCode type="text">
+<button (click)="onSignIn(telegramCode.value); telegramCode.value = ''">Send code</button>-->
+
+
+<div class="main">
+  @if (!isMobile) {
+    <div class="text-center container mt-4">
+      <qrcode [qrdata]='qrCodeLink'
+              [width]="280"
+              [elementType]="'canvas'"
+              [margin]="2"
+              [imageSrc]="'./assets/img/telegram-icon.svg'"
+              [imageHeight]="54"
+              [imageWidth]="54"
+              [scale]="128"></qrcode>
+      <h1>Login in to Telegram by QR Code</h1>
+      <div class="text-start align-items-center justify-content-center d-flex">
+        <ol class="list-group list-group-numbered">
+          <li class="list-group-item">Open Telegram on your phone</li>
+          <li class="list-group-item">Go to Settings &gt; Devices &gt; Link Desktop Device</li>
+          <li class="list-group-item">Point your phone at this screen to confirm login</li>
+        </ol>
+      </div>
+
+      <div class="text-center mt-4">
+        <button type="button" class="btn" (click)="isMobile = true">LOG IN BY PHONE NUMBER</button>
+      </div>
+    </div>
+  } @else {
+    <div class="text-center container mt-4 align-text-center justify-content-center">
+      <img src="./assets/img/telegram-icon.svg" alt="telegram logo" class="img-fluid" width="160">
+      <h1>Telegram</h1>
+      <p class="note w-300">Please confirm your country code
+        and enter your phone number.</p>
+
+      <input type="text" pInputText #phoneNumber placeholder="Phone number" *ngIf="!showTelegramCode"
+             (keyup.enter)="onSendPhoneNumber(phoneNumber.value);">
+
+      <div *ngIf="showTelegramCode">
+        <input type="text" pInputText #telegramCode placeholder="Enter code from Telegram"
+               (keyup.enter)="onSignIn(telegramCode.value);">
+      </div>
+
+
+
+      <div class="text-center mt-4">
+        <button type="button" class="btn" (click)="isMobile = false">LOG IN BY QR CODE</button>
+      </div>
+    </div>
+  }
+
+
+</div>

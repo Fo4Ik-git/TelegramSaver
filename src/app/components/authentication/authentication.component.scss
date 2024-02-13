@@ -1,0 +1,68 @@
+::ng-deep {
+  .qrcode canvas {
+    border-radius: 10%;
+  }
+}
+
+.note {
+  color: var(--color-text-secondary);
+  font-size: 1rem;
+  margin-bottom: 3rem;
+
+}
+
+h1 {
+  margin: 1.5rem 0 1rem 0;
+  font-size: 1.25rem;
+}
+
+.list-group-item {
+  background-color: transparent;
+  color: white;
+  border: none;
+  font-size: 16px;
+  max-width: 300px;
+}
+
+.list-group-numbered > .list-group-item::before {
+  content: counters(section, ".") "";
+  counter-increment: section;
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  line-height: 24px;
+  text-align: center;
+  border-radius: 50%;
+  background-color: var(--color-primary);
+  color: #fff;
+  margin-right: 10px;
+}
+
+.btn {
+  color: var(--color-primary);
+  transition: 0.3s;
+}
+
+
+@media (min-width: 600px) {
+  .auth-form .note {
+    font-size: 1rem;
+    margin-bottom: 3rem;
+  }
+}
+
+.auth-form .note {
+  font-size: .875rem;
+  line-height: 1.35;
+  margin-bottom: 2.5rem;
+  color: var(--color-text-secondary);
+}
+
+input {
+  width: 300px;
+  background-color: transparent;
+  border: 1px solid var(--color-text-secondary);
+  border-radius: .375rem;
+  min-height: 2.5rem;
+  color: white;
+}

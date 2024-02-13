@@ -1,1 +1,7 @@
-/* You can add global styles to this file, and also import other style files */
+@import "themes";
+
+body {
+  background-color: var(--main-content-background-color) !important;
+  font-family: var(--font-family);
+  color: var(--text-color);
+}

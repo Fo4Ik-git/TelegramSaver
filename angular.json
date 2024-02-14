@@ -68,11 +68,15 @@
               "buildTarget": "TelegramSaver:build:production"
             },
             "development": {
-              "buildTarget": "TelegramSaver:build:development"
+              "buildTarget": "TelegramSaver:build:development",
+              "ssl": true,
+              "sslKey": "src/assets/ssl/angulattest_ssl_testmainca_.pkcs8",
+              "sslCert": "src/assets/ssl/angulattest_ssl_testmainca_.cer"
             }
           },
           "options": {
-            "host": "0.0.0.0"
+            "host": "0.0.0.0",
+            "disableHostCheck": true
           },
           "defaultConfiguration": "development"
         },

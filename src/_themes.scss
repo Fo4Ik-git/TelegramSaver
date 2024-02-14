@@ -1,5 +1,7 @@
 [data-theme="light"] {
   --main-content-background-color: #ffffff;
+  --backgroud-image: url('assets/img/chat-bg-pattern-light.png');
+  --color-primary: #8774E1;
   --text-color: #000000;
 
   --font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Apple Color Emoji", "Segoe UI", Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
@@ -8,10 +10,11 @@
 
 [data-theme="dark"] {
   --main-content-background-color: #212121;
-  --color-primary: rgb(135,116,225);
-  --color-text-secondary: #AAAAAA;
+  --backgroud-image: url('assets/img/chat-bg-pattern-dark.png');
+  --color-primary: #8774E1;
 
   --text-color: #ffffff;
+  --color-text-secondary: #AAAAAA;
 
   --font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Apple Color Emoji", "Segoe UI", Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
   --font-family-monospace: "Cascadia Mono", "Roboto Mono", "Droid Sans Mono", "SF Mono", "Menlo", "Ubuntu Mono", "Consolas", monospace;

@@ -1,8 +1,8 @@
 import {Injectable} from '@angular/core';
-import {telegramConfig} from "../config/telegram.config";
 
 // @ts-ignore
 import MTProto from '@mtproto/core/envs/browser';
+import {ConfigService} from "../config/config.service";
 
 
 @Injectable({
@@ -10,29 +10,21 @@ import MTProto from '@mtproto/core/envs/browser';
 })
 export class TelegramService {
 
-  public config = telegramConfig;
+  public config: any = JSON.parse(localStorage.getItem('config') || '{}');
   public mtProto: any;
-  public loginToken!: string;
 
-  constructor() {
+  constructor(private configService: ConfigService) {
+
+    localStorage.removeItem('config')
+    if (!localStorage.getItem('config')) {
+      this.configService.saveConfig();
+    }
+
     this.mtProto = new MTProto({
       api_id: this.config.api_id,
       api_hash: this.config.api_hash,
       // test: true
     });
-
-    /*this.mtProto.updates.on('updateShort', async (updateInfo: any) => {
-      switch (updateInfo.update._) {
-        case 'updateLoginToken': {
-          let authorization = (await this.exportLoginToken()).authorization;
-          localStorage.setItem('authorization', authorization);
-          let user = authorization.user;
-          localStorage.setItem('user', JSON.stringify(user));
-          window.location.reload();
-          break;
-        }
-      }
-    });*/
   }
 
 
@@ -57,23 +49,7 @@ export class TelegramService {
     })).messages;
   }*/
 
-  /*public async startBot(bot: InputUser) {
-    return this.call('messages.startBot', {
-      bot: {
-        _: 'inputUser',
-        user_id: this.config.bot_id,
-        access_hash: 0
-      },
-      peer: {
-        _: 'inputPeerUser',
-        user_id: this.user.id,
-        access_hash: this.user.access_hash
-      },
-      random_id: 123,
-      start_param: 'start'
-    });
-  }
-
+  /*
   public async sendMessage(message: string, random_id: number) {
     return this.call('messages.sendMessage', {
       peer: {
@@ -85,12 +61,5 @@ export class TelegramService {
       random_id: random_id,
     });
   }
-
-  public async importBotAuthorization() {
-    return this.call('authentication.importBotAuthorization', {
-      api_id: this.config.api_id,
-      api_hash: this.config.api_hash,
-      bot_auth_token: this.config.bot_token
-    });
-  }*/
+*/
 }

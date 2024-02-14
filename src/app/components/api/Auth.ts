@@ -2,19 +2,26 @@ import {TelegramService} from "../../services/telegram.service";
 import {telegramConfig} from "../../config/telegram.config";
 
 export class Auth {
-  config = telegramConfig
+  public config: any = JSON.parse(localStorage.getItem('config') || '{}');
+  configDefault = telegramConfig;
   mtProto: any;
 
   constructor(private telegramService: TelegramService) {
 
     this.mtProto = this.telegramService.mtProto;
 
+    if (!this.config) {
+      this.config = this.configDefault;
+      localStorage.setItem('config', JSON.stringify(this.config));
+    }
 
     this.mtProto.updates.on('updateShort', async (updateInfo: any) => {
       switch (updateInfo.update._) {
         case 'updateLoginToken': {
           let authorization = (await this.exportLoginToken()).authorization;
           localStorage.setItem('authorization', authorization);
+
+          console.log("authorization", authorization)
 
           let user = authorization.user;
           localStorage.setItem('user', JSON.stringify(user));
@@ -53,8 +60,7 @@ export class Auth {
     });
   }
 
-  public async exportLoginToken(loginToken: any = []) {
-    console.log("exportLoginToken")
+  public async exportLoginToken() {
     try {
       return await this.call('auth.exportLoginToken', {
         api_id: this.config.api_id,

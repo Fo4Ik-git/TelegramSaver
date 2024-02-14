@@ -12,7 +12,7 @@ import {Photos} from "../api/Photos";
 import {Upload} from "../api/Upload";
 import {InputUserPhoto} from "../api/Data/InputUserPhoto/InputUserPhoto";
 import { SplitterModule } from 'primeng/splitter';
-
+import {telegramConfig} from "../../config/telegram.config";
 @Component({
   selector: 'app-index',
   standalone: true,
@@ -30,7 +30,8 @@ export class IndexComponent implements OnInit {
   user: any = JSON.parse(localStorage.getItem('user') || '{}');
   botUser: any = JSON.parse(localStorage.getItem('botUser') || '{}');
   isMobile!: boolean;
-  config: any = JSON.parse(localStorage.getItem('config') || '{}');
+  userConfig: any = JSON.parse(localStorage.getItem('userConfig') || '{}');
+  telegramConfig = telegramConfig;
   userProfilePhoto !: string;
   messages = new Messages(this.telegramService);
   contacts = new Contacts(this.telegramService);
@@ -55,17 +56,17 @@ export class IndexComponent implements OnInit {
     this.isMobile = this.deviceService.isMobile();
 
     if (this.authorization) {
-      this.config.user.userProfilePhoto = await this.photos.getUserProfilePhoto(
+      this.userConfig.user.userProfilePhoto = await this.photos.getUserProfilePhoto(
         new InputUserPhoto(this.user.id, this.user.access_hash, this.user.photo.photo_id));
-      this.userProfilePhoto = this.config.user.userProfilePhoto;
+      this.userProfilePhoto = this.userConfig.user.userProfilePhoto;
     }
 
-    this.configService.saveConfig(this.config)
+    this.configService.saveConfig(this.userConfig)
   }
 
   async startBot() {
 
-    let ResolvedPeer = await this.contacts.resolveUsername(this.config.bot_username);
+    let ResolvedPeer = await this.contacts.resolveUsername(this.userConfig.bot_username);
     console.log("ResolvedPeer", ResolvedPeer);
 
     this.messages.startBot(

@@ -2,28 +2,27 @@
   @if (authorization) {
 
     <main>
-      <!--<app-side-bar-menu
-        [userProfilePhoto]="userProfilePhoto"
-        [isMobile]="isMobile"
-        [user]="user"
-      ></app-side-bar-menu>-->
+      <!-- <div class="sidebar">
+         <app-side-bar-menu
+           [userProfilePhoto]="userProfilePhoto"
+           [isMobile]="isMobile"
+           [user]="user"
+         ></app-side-bar-menu>
+       </div>-->
 
-
-      <div class="card">
-        <p-splitter [panelSizes]="[20, 80]" [minSizes]="[10, 50]">
-          <ng-template pTemplate>
-            <app-side-bar-menu
-              [userProfilePhoto]="userProfilePhoto"
-              [isMobile]="isMobile"
-              [user]="user"
-              class="col flex align-items-center justify-content-center"
-            ></app-side-bar-menu>
-          </ng-template>
-          <ng-template pTemplate>
-
-          </ng-template>
-        </p-splitter>
-      </div>
+      <p-splitter [panelSizes]="[12, 88]">
+        <ng-template pTemplate>
+          <app-side-bar-menu
+            [userProfilePhoto]="userProfilePhoto"
+            [isMobile]="isMobile"
+            [user]="user"
+            style="width:100%;"
+          ></app-side-bar-menu>
+        </ng-template>
+        <ng-template pTemplate>
+          <div class="col flex align-items-center justify-content-center" style="min-width: min-content">Panel 2</div>
+        </ng-template>
+      </p-splitter>
     </main>
 
     <!--{{ JSON.stringify(user) }}

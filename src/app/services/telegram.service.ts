@@ -3,6 +3,7 @@ import {Injectable} from '@angular/core';
 // @ts-ignore
 import MTProto from '@mtproto/core/envs/browser';
 import {ConfigService} from "../config/config.service";
+import {telegramConfig} from "../config/telegram.config";
 
 
 @Injectable({
@@ -10,7 +11,9 @@ import {ConfigService} from "../config/config.service";
 })
 export class TelegramService {
 
-  public config: any = JSON.parse(localStorage.getItem('config') || '{}');
+  // public config: any = JSON.parse(localStorage.getItem('config') || '{}');
+  userConfig: any = JSON.parse(localStorage.getItem('userConfig') || '{}');
+  telegramConfig = telegramConfig
   public mtProto: any;
 
   constructor(private configService: ConfigService) {
@@ -21,8 +24,8 @@ export class TelegramService {
     }
 
     this.mtProto = new MTProto({
-      api_id: this.config.api_id,
-      api_hash: this.config.api_hash,
+      api_id: this.telegramConfig.api_id,
+      api_hash: this.telegramConfig.api_hash,
       // test: true
     });
   }

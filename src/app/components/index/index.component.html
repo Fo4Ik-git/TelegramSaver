@@ -1,30 +1,40 @@
 <div>
   @if (authorization) {
-    <!--    {{ JSON.stringify(user) }}-->
 
-    {{ 'id: ' + user.id }}
-    <p></p>
-    {{ 'access_hash: ' + user.access_hash }}
-    <p></p>
-    {{ 'bot_id: ' + botUser.id }}
-    <p></p>
-    {{ 'bot_access_hash: ' + botUser.access_hash }}
+    <main>
+      <!--<app-side-bar-menu
+        [userProfilePhoto]="userProfilePhoto"
+        [isMobile]="isMobile"
+        [user]="user"
+      ></app-side-bar-menu>-->
 
 
-    <button (click)="startBot()">
-      Bot Start
+      <div class="card">
+        <p-splitter [panelSizes]="[20, 80]" [minSizes]="[10, 50]">
+          <ng-template pTemplate>
+            <app-side-bar-menu
+              [userProfilePhoto]="userProfilePhoto"
+              [isMobile]="isMobile"
+              [user]="user"
+              class="col flex align-items-center justify-content-center"
+            ></app-side-bar-menu>
+          </ng-template>
+          <ng-template pTemplate>
+
+          </ng-template>
+        </p-splitter>
+      </div>
+    </main>
+
+    <!--{{ JSON.stringify(user) }}
+    <button (click)="changeTheme()" class="btn" type="button" style="color:var(&#45;&#45;color-primary)">
+      change Theme
     </button>
-    <!--<button (click)="sendMessage()">
-      Message
-    </button>
-    <button (click)="startBot()">
-      Bot
-    </button>
-    <button (click)="getBotInfo()">
-      Bot Info
-    </button>-->
-      <!--    {{ user.first_name }}-->
+
+    <img [src]="userProfilePhoto" alt="logo">-->
+
   } @else {
     <app-authentication [isMobile]="isMobile"></app-authentication>
   }
 </div>
+

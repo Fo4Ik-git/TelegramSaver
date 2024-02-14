@@ -1,0 +1,21 @@
+.menu {
+  background-color: var(--main-content-background-color);
+  border-right: 2px solid var(--color-text-secondary);
+  /*max-width: 20vw;
+  min-width: 20vw;*/
+  width: 100%;
+  height: 100vh;
+  bottom: 0;
+}
+
+.img-fluid {
+  border-radius: 50%;
+}
+
+hr {
+  border-top: 2px solid var(--color-text-secondary);
+}
+
+.text {
+  color: var(--color-text-secondary);
+}

@@ -1,14 +1,17 @@
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {SideBarMenuComponent} from "../side-bar-menu/side-bar-menu.component";
 import {AuthenticationComponent} from "../authentication/authentication.component";
 import {DeviceDetectorService} from "ngx-device-detector";
 import {ConfigService} from "../../config/config.service";
 import {TelegramService} from "../../services/telegram.service";
-import {telegramConfig} from "../../config/telegram.config";
-import {HttpClient, HttpClientModule} from "@angular/common/http";
+import {HttpClientModule} from "@angular/common/http";
 import {Messages} from "../api/Messages";
 import {Contacts} from "../api/Contacts";
 import {InputUser} from "../api/Data/InputUser";
+import {Photos} from "../api/Photos";
+import {Upload} from "../api/Upload";
+import {InputUserPhoto} from "../api/Data/InputUserPhoto/InputUserPhoto";
+import { SplitterModule } from 'primeng/splitter';
 
 @Component({
   selector: 'app-index',
@@ -16,28 +19,48 @@ import {InputUser} from "../api/Data/InputUser";
   imports: [
     SideBarMenuComponent,
     AuthenticationComponent,
-    HttpClientModule
+    HttpClientModule,
+    SplitterModule
   ],
   templateUrl: './index.component.html',
   styleUrl: './index.component.css'
 })
-export class IndexComponent {
+export class IndexComponent implements OnInit {
   authorization: any = localStorage.getItem('authorization') || null;
   user: any = JSON.parse(localStorage.getItem('user') || '{}');
   botUser: any = JSON.parse(localStorage.getItem('botUser') || '{}');
   isMobile!: boolean;
-  public config = telegramConfig;
+  config: any = JSON.parse(localStorage.getItem('config') || '{}');
+  userProfilePhoto !: string;
   messages = new Messages(this.telegramService);
   contacts = new Contacts(this.telegramService);
+  photos = new Photos(this.telegramService);
+  upload = new Upload(this.telegramService);
+
   protected readonly JSON = JSON;
 
   constructor(private deviceService: DeviceDetectorService,
               private telegramService: TelegramService,
-              private http: HttpClient,
               private configService: ConfigService) {
-    this.isMobile = this.deviceService.isMobile();
+
+
+  }
+
+  async ngOnInit() {
+
 
     this.configService.applyTheme();
+
+
+    this.isMobile = this.deviceService.isMobile();
+
+    if (this.authorization) {
+      this.config.user.userProfilePhoto = await this.photos.getUserProfilePhoto(
+        new InputUserPhoto(this.user.id, this.user.access_hash, this.user.photo.photo_id));
+      this.userProfilePhoto = this.config.user.userProfilePhoto;
+    }
+
+    this.configService.saveConfig(this.config)
   }
 
   async startBot() {
@@ -59,21 +82,8 @@ export class IndexComponent {
     )
   }
 
-  /*async sendMessage() {
-    if (this.authorization) {
-      let update = (await this.telegramService.sendMessage('Hello from Angular', this.config.bot_id));
-    }
+  changeTheme() {
+    this.configService.changeTheme();
   }
-
-  async startBot() {
-    if (this.authorization) {
-      let intupUser = new InputUser(
-        this.config.bot_id,
-        0
-      );
-      let update = (await this.telegramService.startBot(intupUser));
-    }
-  }
-*/
 
 }

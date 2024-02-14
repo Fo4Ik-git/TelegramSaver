@@ -32,6 +32,7 @@ export class AuthenticationComponent implements OnInit {
   @Input() isMobile!: boolean;
   showTelegramCode: boolean = false;
   auth = new Auth(this.telegramService)
+  loginToken: any;
   protected readonly JSON = JSON;
 
   constructor(private telegramService: TelegramService) {
@@ -39,7 +40,8 @@ export class AuthenticationComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
 
-    this.telegramService.loginToken = (await this.auth.exportLoginToken()).token;
+    this.loginToken = (await this.auth.exportLoginToken()).token;
+
     let base64Token;
     try {
       base64Token = this.getBase64Token();
@@ -50,7 +52,7 @@ export class AuthenticationComponent implements OnInit {
   }
 
   getBase64Token() {
-    return Buffer.from(this.telegramService.loginToken).toString('base64');
+    return Buffer.from(this.loginToken).toString('base64');
   }
 
   async onSendPhoneNumber(phone: string) {

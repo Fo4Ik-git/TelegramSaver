@@ -1,10 +1,48 @@
 <div class="menu">
   <!--  User-->
-  <section>
-    <div class="user text-center">
-      <img [src]="userProfilePhoto" alt="user_logo" class="img-fluid">
-      <h1><span class="text">{{ user.first_name }} {{ user.fast_name }}</span></h1>
-    </div>
+  <div class="user text-center">
+    <img [src]="userProfilePhoto" alt="user_logo" class="img-fluid">
+    <br>
+    <span class="text">{{ user.first_name }} {{ user.fast_name }}</span>
+  </div>
+  <hr>
+
+
+  <ul class="content container">
+    <li class="item">
+      <i class="pi pi-folder-open"></i>
+      <span>
+        File Explorer
+      </span>
+    </li>
+    <li class="item">
+      <i class="pi pi-star"></i>
+      <span>
+        Favorites
+      </span>
+    </li>
+  </ul>
+
+
+  <ul class="settings container mb-4">
     <hr>
-  </section>
+    <li (click)="toggleTheme()" class="item">
+      <i [ngClass]="isDarkTheme ? 'pi pi-sun' : 'pi pi-moon'"></i>
+      <span>
+        @if (isDarkTheme) {
+          Light Theme
+        } @else {
+          Dark Theme
+        }
+      </span>
+    </li>
+    <li class="item">
+      <i class="pi pi-cog"></i>
+      <span>
+        Settings
+      </span>
+    </li>
+  </ul>
+
 </div>
+

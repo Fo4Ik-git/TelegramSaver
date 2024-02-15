@@ -11,8 +11,11 @@ import {InputUser} from "../api/Data/InputUser";
 import {Photos} from "../api/Photos";
 import {Upload} from "../api/Upload";
 import {InputUserPhoto} from "../api/Data/InputUserPhoto/InputUserPhoto";
-import { SplitterModule } from 'primeng/splitter';
+import {SplitterModule} from 'primeng/splitter';
 import {telegramConfig} from "../../config/telegram.config";
+import {Help} from "../api/Help";
+import {FileExplorerComponent} from "../file-explorer/file-explorer.component";
+
 @Component({
   selector: 'app-index',
   standalone: true,
@@ -20,7 +23,8 @@ import {telegramConfig} from "../../config/telegram.config";
     SideBarMenuComponent,
     AuthenticationComponent,
     HttpClientModule,
-    SplitterModule
+    SplitterModule,
+    FileExplorerComponent
   ],
   templateUrl: './index.component.html',
   styleUrl: './index.component.css'
@@ -30,13 +34,14 @@ export class IndexComponent implements OnInit {
   user: any = JSON.parse(localStorage.getItem('user') || '{}');
   botUser: any = JSON.parse(localStorage.getItem('botUser') || '{}');
   isMobile!: boolean;
-  userConfig: any = JSON.parse(localStorage.getItem('userConfig') || '{}');
+  userConfig!: any;
   telegramConfig = telegramConfig;
   userProfilePhoto !: string;
   messages = new Messages(this.telegramService);
   contacts = new Contacts(this.telegramService);
   photos = new Photos(this.telegramService);
   upload = new Upload(this.telegramService);
+  help = new Help(this.telegramService);
 
   protected readonly JSON = JSON;
 
@@ -44,11 +49,13 @@ export class IndexComponent implements OnInit {
               private telegramService: TelegramService,
               private configService: ConfigService) {
 
-
   }
 
   async ngOnInit() {
-
+    this.userConfig = JSON.parse(localStorage.getItem('userConfig') || '{}');
+    if (Object.keys(this.userConfig).length === 0) {
+      this.userConfig = this.configService.saveConfig();
+    }
 
     this.configService.applyTheme();
 
@@ -56,19 +63,16 @@ export class IndexComponent implements OnInit {
     this.isMobile = this.deviceService.isMobile();
 
     if (this.authorization) {
-      this.userConfig.user.userProfilePhoto = await this.photos.getUserProfilePhoto(
+      let photo = await this.photos.getUserProfilePhoto(
         new InputUserPhoto(this.user.id, this.user.access_hash, this.user.photo.photo_id));
-      this.userProfilePhoto = this.userConfig.user.userProfilePhoto;
+      this.userProfilePhoto = photo;
     }
 
-    this.configService.saveConfig(this.userConfig)
   }
 
   async startBot() {
 
     let ResolvedPeer = await this.contacts.resolveUsername(this.userConfig.bot_username);
-    console.log("ResolvedPeer", ResolvedPeer);
-
     this.messages.startBot(
       new InputUser(
         ResolvedPeer.users[0].id,
@@ -82,9 +86,4 @@ export class IndexComponent implements OnInit {
       'naskad'
     )
   }
-
-  changeTheme() {
-    this.configService.changeTheme();
-  }
-
 }

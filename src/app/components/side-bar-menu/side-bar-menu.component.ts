@@ -2,13 +2,15 @@ import {Component, Input, OnInit} from '@angular/core';
 import {AvatarModule} from "primeng/avatar";
 import {ConfigService} from "../../config/config.service";
 import {NgClass} from "@angular/common";
+import {ImageModule} from "primeng/image";
 
 @Component({
   selector: 'app-side-bar-menu',
   standalone: true,
   imports: [
     AvatarModule,
-    NgClass
+    NgClass,
+    ImageModule
   ],
   templateUrl: './side-bar-menu.component.html',
   styleUrl: './side-bar-menu.component.scss'
@@ -30,9 +32,12 @@ export class SideBarMenuComponent implements OnInit {
 
   toggleTheme() {
     this.isDarkTheme = !this.isDarkTheme;
-    this.userConfig.style.theme = this.isDarkTheme ? 'dark' : 'light';
     this.configService.changeTheme()
   }
 
+  logout() {
+    localStorage.clear();
+    window.location.reload();
+  }
 
 }

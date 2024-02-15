@@ -1,8 +1,8 @@
-.sidebar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 250px; /* Измените это значение, чтобы установить желаемую ширину боковой панели */
-  height: 100vh;
-  overflow: auto;
-}
+/*.sidebar {*/
+/*  position: fixed;*/
+/*  top: 0;*/
+/*  left: 0;*/
+/*  width: 250px; !* Измените это значение, чтобы установить желаемую ширину боковой панели *!*/
+/*  height: 100vh;*/
+/*  overflow: auto;*/
+/*}*/

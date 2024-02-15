@@ -1,6 +1,6 @@
 <div class="menu">
   <!--  User-->
-  <div class="user text-center">
+  <div class="user text-center pt-2">
     <img [src]="userProfilePhoto" alt="user_logo" class="img-fluid">
     <br>
     <span class="text">{{ user.first_name }} {{ user.fast_name }}</span>
@@ -42,6 +42,12 @@
         Settings
       </span>
     </li>
+    <!--<li (click)="logout()" class="item">
+      <i class="pi pi-sort-up"></i>
+      <span>
+        Log out
+      </span>
+    </li>-->
   </ul>
 
 </div>

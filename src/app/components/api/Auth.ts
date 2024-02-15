@@ -1,10 +1,12 @@
 import {TelegramService} from "../../services/telegram.service";
 import {telegramConfig} from "../../config/telegram.config";
+import {ConfigService} from "../../config/config.service";
 
 export class Auth {
   public config: any = JSON.parse(localStorage.getItem('config') || '{}');
   configDefault = telegramConfig;
   mtProto: any;
+  configService = new ConfigService();
 
   constructor(private telegramService: TelegramService) {
 
@@ -15,16 +17,21 @@ export class Auth {
       localStorage.setItem('config', JSON.stringify(this.config));
     }
 
+
     this.mtProto.updates.on('updateShort', async (updateInfo: any) => {
+      console.log('updateShort:', updateInfo);
+
       switch (updateInfo.update._) {
         case 'updateLoginToken': {
+          //TODO FIX error_message: 'SESSION_PASSWORD_NEEDED' line 25
+
+
           let authorization = (await this.exportLoginToken()).authorization;
           localStorage.setItem('authorization', authorization);
 
-          console.log("authorization", authorization)
-
           let user = authorization.user;
           localStorage.setItem('user', JSON.stringify(user));
+          this.configService.saveConfig();
 
           window.location.reload();
           break;
@@ -63,8 +70,8 @@ export class Auth {
   public async exportLoginToken() {
     try {
       return await this.call('auth.exportLoginToken', {
-        api_id: this.config.api_id,
-        api_hash: this.config.api_hash,
+        api_id: this.configDefault.api_id,
+        api_hash: this.configDefault.api_hash,
         except_ids: []
       });
     } catch (e) {

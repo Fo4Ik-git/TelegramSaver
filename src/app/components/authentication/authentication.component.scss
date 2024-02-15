@@ -2,6 +2,32 @@
   .qrcode canvas {
     border-radius: 10%;
   }
+
+  .p-dropdown-items-wrapper {
+    background-color: var(--main-content-background-color);
+    color: var(--text-color);
+    overflow: auto;
+    max-height: 300px !important;
+
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .p-inputwrapper {
+    width: 100%;
+  }
+
+  .p-dropdown-label {
+    color: var(--color-text-secondary);
+  }
+
+  .p-dropdown-trigger {
+    text-align: right;
+  }
 }
 
 .note {
@@ -43,6 +69,17 @@ h1 {
   transition: 0.3s;
 }
 
+.next {
+  background-color: var(--color-primary);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.3s;
+  width: 300px
+}
+
 
 @media (min-width: 600px) {
   .auth-form .note {
@@ -60,9 +97,19 @@ h1 {
 
 input {
   width: 300px;
-  background-color: transparent;
+  background-color: var(--main-content-background-color);
   border: 1px solid var(--color-text-secondary);
   border-radius: .375rem;
   min-height: 2.5rem;
   color: white;
+}
+
+.input-countries {
+  border: 1px solid var(--color-text-secondary);
+  border-radius: .375rem;
+  width: 300px;
+}
+
+.input-countries:hover {
+  border: 1px solid var(--color-primary);
 }

@@ -9,6 +9,6 @@ export let userConfig = {
     theme: 'dark',
   },
   user: {
-    userProfilePhoto: 'https://www.cgen.pl/wp-content/themes/easymag-cg/images/no-image.png',
+    lang_code: 'en',
   }
 }

@@ -16,17 +16,14 @@ export class TelegramService {
   telegramConfig = telegramConfig
   public mtProto: any;
 
-  constructor(private configService: ConfigService) {
+  constructor() {
 
-    localStorage.removeItem('config')
-    if (!localStorage.getItem('config')) {
-      this.configService.saveConfig();
-    }
+    localStorage.removeItem('userConfig')
 
     this.mtProto = new MTProto({
       api_id: this.telegramConfig.api_id,
       api_hash: this.telegramConfig.api_hash,
-      // test: true
+      test: true
     });
   }
 

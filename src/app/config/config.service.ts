@@ -6,29 +6,32 @@ import {telegramConfig, userConfig} from "./telegram.config";
 })
 export class ConfigService {
 
-  config: any = JSON.parse(localStorage.getItem('userConfig') || '{}');
+  userConfig: any = JSON.parse(localStorage.getItem('userConfig') || '{}');
   telegramConfig = telegramConfig;
   userDefaultConfig = userConfig;
 
   constructor() {
-    if (!localStorage.getItem('userConfig')) {
-      this.saveConfig();
+    if (Object.keys(this.userConfig).length === 0) {
+      this.userConfig = this.saveConfig();
     }
-    this.config = JSON.parse(localStorage.getItem('userConfig') || '{}');
+    this.userConfig = JSON.parse(localStorage.getItem('userConfig') || '{}');
   }
 
   changeTheme() {
-    this.config.style.theme = this.config.style.theme === 'dark' ? 'light' : 'dark';
-    this.saveConfig(this.config);
+    this.userConfig.style.theme = this.userConfig.style.theme === 'dark' ? 'light' : 'dark';
+    this.saveConfig(this.userConfig);
     this.applyTheme();
   }
 
   applyTheme() {
-    document.body.setAttribute('data-theme', this.config.style.theme);
+    if (this.userConfig.style.theme !== null || this.userConfig.style.theme !== undefined) {
+      document.body.setAttribute('data-theme', this.userConfig.style.theme);
+    }
   }
 
   saveConfig(config: any = this.userDefaultConfig) {
     localStorage.setItem('userConfig', JSON.stringify(config));
+    return localStorage.getItem('userConfig');
     // window.location.reload();
   }
 }

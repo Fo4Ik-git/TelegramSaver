@@ -1,41 +1,35 @@
 <div>
   @if (authorization) {
 
-    <main class="d-flex">
-      <!-- <div class="sidebar">
-         <app-side-bar-menu
-           [userProfilePhoto]="userProfilePhoto"
-           [isMobile]="isMobile"
-           [user]="user"
-         ></app-side-bar-menu>
-       </div>-->
-      <div class="h-100">
-        <app-side-bar-menu
-          [userProfilePhoto]="userProfilePhoto"
-          [isMobile]="isMobile"
-          [user]="user"
-        ></app-side-bar-menu>
-      </div>
-      <div class="mx-3 my-1" >
-        <app-file-explorer></app-file-explorer>
-      </div>
+    @if (!isMobile) {
+      <main class="flex">
+        <!-- <div class="sidebar">
+           <app-side-bar-menu
+             [userProfilePhoto]="userProfilePhoto"
+             [isMobile]="isMobile"
+             [user]="user"
+           ></app-side-bar-menu>
+         </div>-->
+        <div>
+          <app-side-bar-menu
+            [userProfilePhoto]="userProfilePhoto"
+            [isMobile]="isMobile"
+            [user]="user"
+          ></app-side-bar-menu>
+        </div>
+        <div class="w-full h-screen">
+          <app-file-explorer></app-file-explorer>
+        </div>
 
-      <!--<p-splitter [panelSizes]="[12, 88]" [minSizes]="[0, 50]">
-        <ng-template pTemplate>
+      </main>
+    } @else {
+      <app-side-bar-menu
+        [userProfilePhoto]="userProfilePhoto"
+        [isMobile]="isMobile"
+        [user]="user"
+      ></app-side-bar-menu>
+    }
 
-        </ng-template>
-        <ng-template pTemplate>
-
-        </ng-template>
-      </p-splitter>-->
-    </main>
-
-    <!--{{ JSON.stringify(user) }}
-    <button (click)="changeTheme()" class="btn" type="button" style="color:var(&#45;&#45;color-primary)">
-      change Theme
-    </button>
-
-    <img [src]="userProfilePhoto" alt="logo">-->
 
   } @else {
     <app-authentication [isMobile]="isMobile"></app-authentication>

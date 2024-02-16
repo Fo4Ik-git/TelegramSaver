@@ -5,16 +5,17 @@ import {DeviceDetectorService} from "ngx-device-detector";
 import {ConfigService} from "../../config/config.service";
 import {TelegramService} from "../../services/telegram.service";
 import {HttpClientModule} from "@angular/common/http";
-import {Messages} from "../api/Messages";
-import {Contacts} from "../api/Contacts";
+import {Messages} from "../api/client/Messages";
+import {Contacts} from "../api/client/Contacts";
 import {InputUser} from "../api/Data/InputUser";
-import {Photos} from "../api/Photos";
-import {Upload} from "../api/Upload";
+import {Photos} from "../api/client/Photos";
+import {Upload} from "../api/client/Upload";
 import {InputUserPhoto} from "../api/Data/InputUserPhoto/InputUserPhoto";
 import {SplitterModule} from 'primeng/splitter';
-import {telegramConfig} from "../../config/telegram.config";
-import {Help} from "../api/Help";
+import {clickItems, telegramConfig} from "../../config/telegram.config";
+import {Help} from "../api/client/Help";
 import {FileExplorerComponent} from "../file-explorer/file-explorer.component";
+import {ContextMenuModule} from "primeng/contextmenu";
 
 @Component({
   selector: 'app-index',
@@ -24,7 +25,8 @@ import {FileExplorerComponent} from "../file-explorer/file-explorer.component";
     AuthenticationComponent,
     HttpClientModule,
     SplitterModule,
-    FileExplorerComponent
+    FileExplorerComponent,
+    ContextMenuModule
   ],
   templateUrl: './index.component.html',
   styleUrl: './index.component.css'
@@ -39,6 +41,7 @@ export class IndexComponent implements OnInit {
   userProfilePhoto !: string;
   messages = new Messages(this.telegramService);
   contacts = new Contacts(this.telegramService);
+  clickItems = clickItems;
   photos = new Photos(this.telegramService);
   upload = new Upload(this.telegramService);
   help = new Help(this.telegramService);
@@ -53,11 +56,6 @@ export class IndexComponent implements OnInit {
 
   async ngOnInit() {
     this.userConfig = JSON.parse(localStorage.getItem('userConfig') || '{}');
-    if (Object.keys(this.userConfig).length === 0) {
-      this.userConfig = this.configService.saveConfig();
-    }
-
-    this.configService.applyTheme();
 
 
     this.isMobile = this.deviceService.isMobile();
@@ -72,7 +70,7 @@ export class IndexComponent implements OnInit {
 
   async startBot() {
 
-    let ResolvedPeer = await this.contacts.resolveUsername(this.userConfig.bot_username);
+    let ResolvedPeer = await this.contacts.resolveUsername(this.telegramConfig.bot_username);
     this.messages.startBot(
       new InputUser(
         ResolvedPeer.users[0].id,
@@ -82,8 +80,9 @@ export class IndexComponent implements OnInit {
         this.user.id,
         this.user.access_hash
       ),
-      this.botUser.username,
       'naskad'
     )
+
+    //filter messages only media != null
   }
 }

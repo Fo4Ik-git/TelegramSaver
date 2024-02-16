@@ -1,1 +1,95 @@
-<p>file-explorer works!</p>
+<main class="h-full">
+
+  @if (!isOnDrugOverCalled) {
+    @for (file of files; track file.name) {
+      <li pDraggable> {{ file.name }}</li>
+    } @empty {
+      <li> There are no items.</li>
+    }
+  } @else {
+    <div class="w-full h-full bg-white/[.1]" (drop)="onDrag($event)">
+      <input #fileInput type="file" id="fileInput" name="fileInput" multiple style="display: none;"
+             (change)="onDrag($event)">
+      <div class="flex py-4 px-4 bg-white/[.3]">
+        <button type="button" class="flex items-center mr-4 bg-blue-500 rounded p-2 hover:bg-blue-700"
+                (click)="fileInput.click()">
+          <svg class="h-8 w-8 text-text-light dark:text-text-dark" fill="none" viewBox="0 0 24 24"
+               stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+          </svg>
+          Choose files
+        </button>
+        <button type="button" class="flex items-center mr-4 bg-blue-500 rounded p-2 hover:bg-blue-700"
+                (click)="onUpload()">
+          <svg class="h-8 w-8 text-text-light dark:text-text-dark" width="24" height="24" viewBox="0 0 24 24"
+               stroke-width="2"
+               stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path stroke="none" d="M0 0h24v24H0z"/>
+            <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2"/>
+            <polyline points="7 9 12 4 17 9"/>
+            <line x1="12" y1="4" x2="12" y2="16"/>
+          </svg>
+          Upload
+        </button>
+        <button type="button" class="flex items-center mr-4 bg-blue-500 rounded p-2 hover:bg-blue-700"
+                (click)="onCancel()">
+          <svg class="h-8 w-8 text-text-light dark:text-text-dark" fill="none" viewBox="0 0 24 24"
+               stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          Cancel
+        </button>
+      </div>
+      <div class="file-display px-2 pt-2">
+        @if (uploadedFiles.length <= 0) {
+          <div class="flex flex-col items-center justify-center">
+            <svg class="h-24 w-24 text-text-light dark:text-text-dark" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="17 8 12 3 7 8"/>
+              <line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+            <p class="text-text-light dark:text-text-dark">Drag and drop your files here</p>
+          </div>
+        } @else {
+
+          <table class="table-auto w-full border-separate border-spacing-2">
+            <tbody>
+            <tr *ngFor="let file of uploadedFiles; let i = index">
+              <img *ngIf="file.src && file.src.startsWith('data:image'); else noImage" [src]="file.src"
+                   class="w-12 h-12 rounded" alt="{{file.name}}">
+              <td class="px-4 py-2">{{ file.name }}</td>
+              <td class="px-4 py-2">{{ file.size }}</td>
+              <td class="px-4 py-2">
+                <button (click)="removeFile(i)">
+                  <svg class="text-text-light dark:text-text-dark" width="24" height="24" viewBox="0 0 24 24"
+                       stroke-width="2"
+                       stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z"/>
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                  </svg>
+                </button>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        }
+      </div>
+    </div>
+
+    <ng-template #noImage>
+      <svg class="h-12 w-12 text-text-light dark:text-text-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+           stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round">
+        <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/>
+        <polyline points="13 2 13 9 20 9"/>
+      </svg>
+    </ng-template>
+
+  }
+  <p-toast [life]="2000"></p-toast>
+</main>

@@ -1,0 +1,17 @@
+::ng-deep {
+  .p-fileupload-content {
+    min-height: calc(100vh - 88px);
+  }
+
+  .p-button {
+    margin: 0 .375rem 0 .375rem;
+    align-items: center;
+
+  }
+}
+
+.file-drop {
+  //background-color: rgba(theme('colors.white'), 0.1);
+}
+
+

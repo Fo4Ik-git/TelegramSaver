@@ -1,6 +1,6 @@
-import {TelegramService} from "../../services/telegram.service";
-import {InputPhotoFileLocation} from "./Data/InputFileLocation/InputPhotoFileLocation";
-import {InputPeerPhotoFileLocation} from "./Data/InputFileLocation/InputPeerPhotoFileLocation";
+import {TelegramService} from "../../../services/telegram.service";
+import {InputPhotoFileLocation} from "../Data/InputFileLocation/InputPhotoFileLocation";
+import {InputPeerPhotoFileLocation} from "../Data/InputFileLocation/InputPeerPhotoFileLocation";
 
 
 export class Upload {
@@ -11,24 +11,7 @@ export class Upload {
     this.mtProto = this.telegramService.mtProto;
   }
 
-  /**
-   * This method is used to make a call to the Telegram API.
-   *
-   * @param {any} method - The name of the method to call on the Telegram API.
-   * @param {Object} [params={}] - The parameters to pass to the method. Default is an empty object.
-   * @param {Object} [options={}] - The options for the method call. Default is an empty object.
-   *
-   * @returns {Promise} - A Promise that resolves with the result of the method call if it is successful, or rejects with an error if the method call fails.
-   *
-   * @throws {Error} - If the method call to the Telegram API fails, an error is thrown.
-   */
-  public async call(method: any, params: {} = {}, options: {} = {}) {
-    try {
-      return await this.mtProto.call(method, params, options);
-    } catch (e) {
-      return Promise.reject(e);
-    }
-  }
+
 
 
   /**
@@ -49,7 +32,7 @@ export class Upload {
       case InputPhotoFileLocation: {
         let photoLocation = location as InputPhotoFileLocation;
 
-        return this.call('upload.getFile', {
+        return this.telegramService.call('upload.getFile', {
           location: {
             _: photoLocation._,
             id: photoLocation.id,
@@ -63,7 +46,7 @@ export class Upload {
       }
       case InputPeerPhotoFileLocation: {
         let peerPhotoLocation = location as InputPeerPhotoFileLocation;
-        return this.call('upload.getFile', {
+        return this.telegramService.call('upload.getFile', {
           location: {
             _: peerPhotoLocation._,
             peer: {
@@ -81,8 +64,8 @@ export class Upload {
     }
   }
 
-  async saveFilePart(file_id: number, file_part: number, bytes: Uint8Array) {
-    return this.call('upload.saveFilePart', {
+  async saveFilePart(file_id: number, bytes: Uint8Array, file_part: number = 0 ) {
+    return this.telegramService.call('upload.saveFilePart', {
       file_id: file_id,
       file_part: file_part,
       bytes: bytes
@@ -90,7 +73,7 @@ export class Upload {
   }
 
   async saveBigFilePart(file_id: number, file_part: number, file_total_parts: number, bytes: Uint8Array) {
-    return this.call('upload.saveBigFilePart', {
+    return this.telegramService.call('upload.saveBigFilePart', {
       file_id: file_id,
       file_part: file_part,
       file_total_parts: file_total_parts,

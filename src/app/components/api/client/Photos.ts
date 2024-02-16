@@ -1,9 +1,9 @@
-import {TelegramService} from "../../services/telegram.service";
-import {InputUser} from "./Data/InputUser";
-import {InputPeerPhotoFileLocation} from "./Data/InputFileLocation/InputPeerPhotoFileLocation";
-import {InputPeerUser} from "./Data/InputPeer/InputPeerUser";
+import {TelegramService} from "../../../services/telegram.service";
+import {InputUser} from "../Data/InputUser";
+import {InputPeerPhotoFileLocation} from "../Data/InputFileLocation/InputPeerPhotoFileLocation";
+import {InputPeerUser} from "../Data/InputPeer/InputPeerUser";
 import {Upload} from "./Upload";
-import {InputUserPhoto} from "./Data/InputUserPhoto/InputUserPhoto";
+import {InputUserPhoto} from "../Data/InputUserPhoto/InputUserPhoto";
 
 export class Photos {
   mtProto: any;
@@ -15,24 +15,6 @@ export class Photos {
 
   }
 
-  /**
-   * This method is used to make a call to the Telegram API.
-   *
-   * @param {any} method - The name of the method to call on the Telegram API.
-   * @param {Object} [params={}] - The parameters to pass to the method. Default is an empty object.
-   * @param {Object} [options={}] - The options for the method call. Default is an empty object.
-   *
-   * @returns {Promise} - A Promise that resolves with the result of the method call if it is successful, or rejects with an error if the method call fails.
-   *
-   * @throws {Error} - If the method call to the Telegram API fails, an error is thrown.
-   */
-  public async call(method: any, params: {} = {}, options: {} = {}) {
-    try {
-      return await this.mtProto.call(method, params, options);
-    } catch (e) {
-      return Promise.reject(e);
-    }
-  }
 
   /**
    * This method is used to get the photos of a specific user.
@@ -47,7 +29,7 @@ export class Photos {
    * @throws {Error} - If the method call to the Telegram API fails, an error is thrown.
    */
   public async getUserPhotos(user: InputUser, offset: number = 0, max_id: number = 0, limit: number = -1) {
-    return this.call('photos.getUserPhotos', {
+    return this.telegramService.call('photos.getUserPhotos', {
       user_id: {
         _: 'inputUser',
         user_id: user.user_id,

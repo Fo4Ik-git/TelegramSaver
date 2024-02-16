@@ -1,6 +1,6 @@
-import {TelegramService} from "../../services/telegram.service";
-import {telegramConfig} from "../../config/telegram.config";
-import {ConfigService} from "../../config/config.service";
+import {TelegramService} from "../../../services/telegram.service";
+import {telegramConfig} from "../../../config/telegram.config";
+import {ConfigService} from "../../../config/config.service";
 
 export class Auth {
   public config: any = JSON.parse(localStorage.getItem('config') || '{}');
@@ -41,17 +41,8 @@ export class Auth {
     });
   }
 
-
-  public async call(method: any, params: {} = {}, options: {} = {}) {
-    try {
-      return await this.mtProto.call(method, params, options);
-    } catch (e) {
-      return Promise.reject(e);
-    }
-  }
-
   public async sendCode(phone: string) {
-    return this.call('auth.sendCode', {
+    return this.telegramService.call('auth.sendCode', {
       phone_number: phone,
       settings: {
         _: 'codeSettings',
@@ -61,7 +52,7 @@ export class Auth {
 
   // @ts-ignore
   public async signIn({phone_code, phone_number, phone_code_hash}) {
-    return this.call('auth.signIn', {
+    return this.telegramService.call('auth.signIn', {
       phone_number: phone_number,
       phone_code_hash: phone_code_hash,
       phone_code: phone_code,
@@ -70,7 +61,7 @@ export class Auth {
 
   public async exportLoginToken() {
     try {
-      return await this.call('auth.exportLoginToken', {
+      return await this.telegramService.call('auth.exportLoginToken', {
         api_id: this.configDefault.api_id,
         api_hash: this.configDefault.api_hash,
         except_ids: []

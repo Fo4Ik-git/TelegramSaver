@@ -3,7 +3,6 @@ import {InputPhotoFileLocation} from "./Data/InputFileLocation/InputPhotoFileLoc
 import {InputPeerPhotoFileLocation} from "./Data/InputFileLocation/InputPeerPhotoFileLocation";
 
 
-
 export class Upload {
 
   mtProto: any;
@@ -52,7 +51,7 @@ export class Upload {
 
         return this.call('upload.getFile', {
           location: {
-            _: 'inputPhotoFileLocation',
+            _: photoLocation._,
             id: photoLocation.id,
             access_hash: photoLocation.access_hash,
             file_reference: photoLocation.file_reference,
@@ -66,9 +65,9 @@ export class Upload {
         let peerPhotoLocation = location as InputPeerPhotoFileLocation;
         return this.call('upload.getFile', {
           location: {
-            _: 'inputPeerPhotoFileLocation',
+            _: peerPhotoLocation._,
             peer: {
-              _: 'inputPeerUser',
+              _: peerPhotoLocation.peer._,
               user_id: peerPhotoLocation.peer.user_id,
               access_hash: peerPhotoLocation.peer.access_hash
             },
@@ -80,6 +79,23 @@ export class Upload {
       }
 
     }
+  }
+
+  async saveFilePart(file_id: number, file_part: number, bytes: Uint8Array) {
+    return this.call('upload.saveFilePart', {
+      file_id: file_id,
+      file_part: file_part,
+      bytes: bytes
+    });
+  }
+
+  async saveBigFilePart(file_id: number, file_part: number, file_total_parts: number, bytes: Uint8Array) {
+    return this.call('upload.saveBigFilePart', {
+      file_id: file_id,
+      file_part: file_part,
+      file_total_parts: file_total_parts,
+      bytes: bytes
+    });
   }
 
 }

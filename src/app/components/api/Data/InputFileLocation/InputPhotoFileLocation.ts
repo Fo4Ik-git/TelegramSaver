@@ -3,6 +3,7 @@ export class InputPhotoFileLocation {
   access_hash: number;
   file_reference: Uint8Array;
   thumb_size: string;
+  _ = 'inputPhotoFileLocation';
 
 
   constructor(id: number, access_hash: number, file_reference: Uint8Array, thumb_size: string) {

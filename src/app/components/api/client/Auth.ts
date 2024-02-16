@@ -23,17 +23,18 @@ export class Auth {
 
       switch (updateInfo.update._) {
         case 'updateLoginToken': {
-          //TODO FIX error_message: 'SESSION_PASSWORD_NEEDED' line 25
+          //TODO FIX error_message: 'SESSION_PASSWORD_NEEDED' 2FA add
 
 
           let authorization = (await this.exportLoginToken()).authorization;
+          console.log('authorization:', authorization);
           localStorage.setItem('authorization', authorization);
 
           let user = authorization.user;
           localStorage.setItem('user', JSON.stringify(user));
           this.configService.saveConfig();
 
-          window.location.reload();
+          // window.location.reload();
           break;
         }
       }

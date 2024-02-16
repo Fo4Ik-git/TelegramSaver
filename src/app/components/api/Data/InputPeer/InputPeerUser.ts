@@ -1,6 +1,7 @@
-export class InputPeerUser{
+export class InputPeerUser {
   user_id!: number;
   access_hash!: number;
+  _ = 'inputPeerUser';
 
 
   constructor(user_id: number, access_hash: number) {

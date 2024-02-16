@@ -1,9 +1,17 @@
 @import "themes";
+
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 @import "primeicons/primeicons.css";
+@import "primeng/resources/themes/lara-dark-blue/theme.css";
+@import "primeng/resources/primeng.css";
 
 body {
-  background-color: var(--main-content-background-color) !important;
-  background-image: var(--backgroud-image);
-  font-family: var(--font-family);
-  color: var(--text-color);
+    background-color: var(--main-content-background-color) !important;
+    background-image: var(--backgroud-image);
+    font-family: var(--font-family);
+    color: var(--text-color);
 }

@@ -19,6 +19,7 @@ export class Contacts {
   }
 
   public async resolveUsername(username: string) {
+    console.log("resolveUsername", username)
     return this.call('contacts.resolveUsername', {
       username: username.replace('@', '')
     });

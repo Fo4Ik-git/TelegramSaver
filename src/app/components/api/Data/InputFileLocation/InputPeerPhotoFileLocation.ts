@@ -6,6 +6,7 @@ export class InputPeerPhotoFileLocation {
   big?: boolean;
   peer!: InputPeerUser;
   photo_id!: number;
+  _ = 'inputPeerPhotoFileLocation';
 
   constructor(peer: InputPeerUser, photo_id: number, big?: boolean) {
     this.big = big;

@@ -3,11 +3,27 @@
     border-radius: 10%;
   }
 
-  .p-dropdown-items-wrapper {
+  .p-inputwrapper {
+    display: flex;
+    width: 100%;
+    background-color: var(--background-color);
+  }
+
+  .p-inputtext {
+    padding: 0.5rem;
+  }
+
+  .p-dropdown-items {
+    background: var(--backgroud-color) !important;
+    color: var(--text-color);
+  }
+
+
+  /*.p-dropdown-items-wrapper {
     background-color: var(--main-content-background-color);
     color: var(--text-color);
     overflow: auto;
-    max-height: 300px !important;
+    //max-height: 300px !important;
 
     scrollbar-width: none;
     -ms-overflow-style: none;
@@ -15,6 +31,11 @@
     &::-webkit-scrollbar {
       display: none;
     }
+  }
+
+  .p-inputwrapper-filled {
+    background-color: var(--main-content-background-color);
+    color: var(--text-color);
   }
 
   .p-inputwrapper {
@@ -27,14 +48,17 @@
 
   .p-dropdown-trigger {
     text-align: right;
-  }
+  }*/
 }
 
 .note {
   color: var(--color-text-secondary);
   font-size: 1rem;
   margin-bottom: 3rem;
+}
 
+.main {
+  width: 300px
 }
 
 h1 {
@@ -42,24 +66,22 @@ h1 {
   font-size: 1.25rem;
 }
 
-.list-group-item {
-  background-color: transparent;
-  color: white;
-  border: none;
-  font-size: 16px;
-  max-width: 300px;
+li {
+  list-style: none;
+  counter-increment: list-item;
+  position: relative;
 }
 
-.list-group-numbered > .list-group-item::before {
-  content: counters(section, ".") "";
-  counter-increment: section;
+li::before {
+  content: counter(list-item) ' ';
+  background-color: #ff0000; // Change this to your desired color
   display: inline-block;
   width: 24px;
   height: 24px;
   line-height: 24px;
   text-align: center;
   border-radius: 50%;
-  background-color: var(--color-primary);
+  background-color: var(--primary);
   color: #fff;
   margin-right: 10px;
 }
@@ -97,17 +119,16 @@ h1 {
 
 input {
   width: 300px;
-  background-color: var(--main-content-background-color);
-  border: 1px solid var(--color-text-secondary);
-  border-radius: .375rem;
   min-height: 2.5rem;
   color: white;
+  padding: 0 .5rem 0 .5rem;
 }
 
 .input-countries {
   border: 1px solid var(--color-text-secondary);
   border-radius: .375rem;
   width: 300px;
+  background-color: var(--main-content-background-color);
 }
 
 .input-countries:hover {

@@ -3,6 +3,8 @@ import {AvatarModule} from "primeng/avatar";
 import {ConfigService} from "../../config/config.service";
 import {NgClass} from "@angular/common";
 import {ImageModule} from "primeng/image";
+import {MenubarModule} from "primeng/menubar";
+import {MenuItem} from "primeng/api";
 
 @Component({
   selector: 'app-side-bar-menu',
@@ -10,7 +12,8 @@ import {ImageModule} from "primeng/image";
   imports: [
     AvatarModule,
     NgClass,
-    ImageModule
+    ImageModule,
+    MenubarModule
   ],
   templateUrl: './side-bar-menu.component.html',
   styleUrl: './side-bar-menu.component.scss'
@@ -21,6 +24,7 @@ export class SideBarMenuComponent implements OnInit {
   @Input() user!: any;
   isDarkTheme!: boolean; // Замените на логику определения темы
   userConfig: any = JSON.parse(localStorage.getItem('userConfig') || '{}');
+  items: MenuItem[] | undefined;
 
   constructor(private configService: ConfigService) {
 
@@ -33,6 +37,14 @@ export class SideBarMenuComponent implements OnInit {
   toggleTheme() {
     this.isDarkTheme = !this.isDarkTheme;
     this.configService.changeTheme()
+  }
+
+  open(window: string){
+    switch (window) {
+      case 'settings':{
+
+      }
+    }
   }
 
   logout() {

@@ -3,14 +3,14 @@ import {TelegramService} from "../../services/telegram.service";
 import {Buffer} from "buffer";
 import {QRCodeModule} from "angularx-qrcode";
 import {InputTextModule} from 'primeng/inputtext';
-import {NgClass, NgIf, NgOptimizedImage} from "@angular/common";
-import {Auth} from "../api/Auth";
-import {Help} from '../api/Help';
+import {NgClass, NgIf, NgOptimizedImage, NgTemplateOutlet} from "@angular/common";
+import {Auth} from "../api/client/Auth";
+import {Help} from '../api/client/Help';
 import {DropdownModule} from "primeng/dropdown";
 import {FormsModule} from "@angular/forms";
 import {MessageService} from "primeng/api";
 import {ToastModule} from "primeng/toast";
-import { ConfigService } from '../../config/config.service';
+import {ConfigService} from '../../config/config.service';
 
 interface SignInParams {
   phone_code: string;
@@ -29,7 +29,8 @@ interface SignInParams {
     FormsModule,
     NgOptimizedImage,
     NgClass,
-    ToastModule
+    ToastModule,
+    NgTemplateOutlet
   ],
   providers: [MessageService],
   templateUrl: './authentication.component.html',
@@ -54,6 +55,7 @@ export class AuthenticationComponent implements OnInit {
   constructor(private telegramService: TelegramService,
               private configService: ConfigService,
               private messageService: MessageService,) {
+    this.telegramService.messageService = this.messageService;
   }
 
   async ngOnInit(): Promise<void> {
@@ -103,6 +105,8 @@ export class AuthenticationComponent implements OnInit {
       this.messageService.add({severity: 'error', summary: 'Error', detail: 'Phone number invalid!'});
       return;
     }
+
+    console.log('phone:', phone);
     this.signInParams.phone_number = phone;
     const {phone_code_hash} = await this.auth.sendCode(phone);
 
@@ -112,6 +116,7 @@ export class AuthenticationComponent implements OnInit {
 
   async onSignIn(code: string) {
     this.signInParams.phone_code = code;
+    console.log('code:', code);
 
     let authorization = (await this.auth.signIn(this.signInParams));
     localStorage.setItem('authorization', authorization);
@@ -119,6 +124,8 @@ export class AuthenticationComponent implements OnInit {
     localStorage.setItem('user', JSON.stringify(user));
     this.configService.saveConfig();
 
-    window.location.reload();
+    console.log('authorization:', authorization);
+    console.log('user:', user);
+    // window.location.reload();
   }
 }

@@ -1,30 +1,24 @@
 .menu {
   position: relative;
-  background-color: var(--main-content-background-color);
-  border-right: 1px solid var(--splitter-color);
   //width: 100%;
   min-width: min-content;
   width: min-content;
   height: 100vh;
   bottom: 0;
   white-space: nowrap;
+  background-color: var(--backgroud-color);
+  border: 1px solid var(--splitter);
 }
 
-::ng-deep{
-  img{
-    border-radius: 50%;
-  }
-}
-
-
-hr {
-  border: 1px solid var(--splitter-color);
+.img-fluid {
+  border-radius: 50%;
 }
 
 .text {
   color: var(--text-color);
   font-size: 1.375rem;
 }
+
 
 .content {
   height: max-content;
@@ -50,7 +44,7 @@ hr {
 }
 
 .item:hover {
-  background-color: var(--color-text-secondary);
+  background-color: var(--secondary);
   color: var(--text-color);
   cursor: pointer;
   border-radius: .375rem;
@@ -60,4 +54,23 @@ hr {
   position: absolute;
   bottom: 0;
   width: 100%;
+}
+
+// Mobile
+
+.menu-bar {
+  background-color: var(--main-content-background-color);
+  border: 2px solid var(--splitter-color);
+}
+
+.mobile-text {
+  color: var(--text-color);
+  font-size: 1rem;
+}
+
+li:active {
+  background-color: var(--color-text-secondary);
+  color: var(--text-color);
+  cursor: pointer;
+  border-radius: .375rem;
 }

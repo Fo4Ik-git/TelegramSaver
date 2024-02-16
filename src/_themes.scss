@@ -1,20 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 [data-theme="light"] {
-  --main-content-background-color: #ffffff;
-  --backgroud-image: url('assets/img/chat-bg-pattern-light.png');
-  --color-primary: #8774E1;
-  --text-color: #000000;
+  --text-color: theme('colors.text.light');
+  --secondary: theme('colors.secondary.light');
+  --backgroud-color: theme('colors.background.light');
+  --background-image: theme('backgroundImage.light');
+  --splitter: theme('colors.splitter.light');
+  --primary: theme('colors.primary.light');
 
   --font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Apple Color Emoji", "Segoe UI", Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
   --font-family-monospace: "Cascadia Mono", "Roboto Mono", "Droid Sans Mono", "SF Mono", "Menlo", "Ubuntu Mono", "Consolas", monospace;
 }
 
 [data-theme="dark"] {
-  --main-content-background-color: #212121;
-  --backgroud-image: url('assets/img/chat-bg-pattern-dark.png');
-  --color-primary: #8774E1;
-
-  --text-color: #ffffff;
-  --color-text-secondary: #AAAAAA;
+  --text-color: theme('colors.text.dark');
+  --secondary: theme('colors.secondary.dark');
+  --backgroud-color: theme('colors.background.dark');
+  --background-image: theme('backgroundImage.dark');
+  --splitter: theme('colors.splitter.dark');
+  --primary: theme('colors.primary.dark');
 
   --font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Apple Color Emoji", "Segoe UI", Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
   --font-family-monospace: "Cascadia Mono", "Roboto Mono", "Droid Sans Mono", "SF Mono", "Menlo", "Ubuntu Mono", "Consolas", monospace;

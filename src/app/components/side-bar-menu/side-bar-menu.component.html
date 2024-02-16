@@ -1,54 +1,81 @@
-<div class="menu">
-  <!--  User-->
-  <div class="user text-center pt-2">
-    <img [src]="userProfilePhoto" alt="user_logo" class="img-fluid">
-    <br>
-    <span class="text">{{ user.first_name }} {{ user.fast_name }}</span>
-  </div>
-  <hr>
+@if (!isMobile) {
+
+  <div
+    class="menu border-r-2 border-splitter-light dark:border-splitter">
+    <!--  User-->
+    <div class="user text-center pt-2">
+      <div class="flex justify-center items-center">
+        <img [src]="userProfilePhoto" alt="user_logo" class="img-fluid">
+      </div>
+      <span class="text">{{ user.first_name }} {{ user.fast_name }}</span>
+    </div>
+    <hr class="border-1 border-splitter-light dark:border-splitter">
 
 
-  <ul class="content container">
-    <li class="item">
-      <i class="pi pi-folder-open"></i>
-      <span>
+    <ul class="content container">
+      <li class="item">
+        <i class="pi pi-folder-open"></i>
+        <span>
         File Explorer
       </span>
-    </li>
-    <li class="item">
-      <i class="pi pi-star"></i>
-      <span>
+      </li>
+      <li class="item">
+        <i class="pi pi-star"></i>
+        <span>
         Favorites
       </span>
-    </li>
-  </ul>
+      </li>
+    </ul>
 
 
-  <ul class="settings container mb-4">
-    <hr>
-    <li (click)="toggleTheme()" class="item">
-      <i [ngClass]="isDarkTheme ? 'pi pi-sun' : 'pi pi-moon'"></i>
-      <span>
+    <ul class="settings container mb-4">
+      <hr class="border-1 border-splitter-light dark:border-splitter">
+      <li (click)="toggleTheme()" class="item">
+        <i [ngClass]="isDarkTheme ? 'pi pi-sun' : 'pi pi-moon'"></i>
+        <span>
         @if (isDarkTheme) {
           Light Theme
         } @else {
           Dark Theme
         }
       </span>
-    </li>
-    <li class="item">
-      <i class="pi pi-cog"></i>
-      <span>
+      </li>
+      <li class="item">
+        <i class="pi pi-cog"></i>
+        <span>
         Settings
       </span>
-    </li>
-    <!--<li (click)="logout()" class="item">
-      <i class="pi pi-sort-up"></i>
-      <span>
-        Log out
-      </span>
-    </li>-->
-  </ul>
+      </li>
+      <!--<li (click)="logout()" class="item">
+        <i class="pi pi-sort-up"></i>
+        <span>
+          Log out
+        </span>
+      </li>-->
+    </ul>
 
-</div>
+  </div>
+} @else {
+  <div
+    class="fixed z-50 w-full h-16 max-w-lg -translate-x-1/2 rounded-t-lg bottom-0 left-1/2 menu-bar">
+    <ul class="grid h-full max-w-lg mx-1 grid-cols-5">
+      <li class="inline-flex flex-col items-center justify-center " (click)="toggleTheme()">
+        <i [ngClass]="isDarkTheme ? 'pi pi-sun' : 'pi pi-moon'" style="font-size: 2rem"></i>
+      </li>
+      <li class="inline-flex flex-col items-center justify-center" (click)="open('settings')">
+        <i class="pi pi-cog" style="font-size: 2rem"></i>
+      </li>
+      <li class="inline-flex flex-col items-center justify-center ">
+        <i class="pi pi-plus-circle" style="font-size: 2rem"></i>
+      </li>
+      <li class="inline-flex flex-col items-center justify-center ">
+        <i class="pi pi-star" style="font-size: 2rem"></i>
+      </li>
+      <li class="inline-flex flex-col items-center justify-center ">
+        <i class="pi pi-folder-open" style="font-size: 2rem"></i>
+      </li>
+    </ul>
+  </div>
+
+}
 

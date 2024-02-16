@@ -8,43 +8,56 @@
 <input #telegramCode type="text">
 <button (click)="onSignIn(telegramCode.value); telegramCode.value = ''">Send code</button>-->
 
-
-<div class="main">
+<ng-container *ngTemplateOutlet="alertTemplate"></ng-container>
+<div>
   @if (!isMobile) {
-    <div class="text-center container mt-4">
-      <qrcode [qrdata]='qrCodeLink'
-              [width]="280"
-              [elementType]="'canvas'"
-              [margin]="2"
-              [imageSrc]="'./assets/img/telegram-icon.svg'"
-              [imageHeight]="54"
-              [imageWidth]="54"
-              [scale]="128"></qrcode>
+    <div class="items-center justify-center mt-4 text-center">
+
+      <div class="flex justify-center items-center">
+        <qrcode [qrdata]='qrCodeLink'
+                [width]="280"
+                [elementType]="'canvas'"
+                [margin]="2"
+                [imageSrc]="'./assets/img/telegram-icon.svg'"
+                [imageHeight]="54"
+                [imageWidth]="54"
+                [scale]="128"></qrcode>
+      </div>
+
       <h1>Login in to Telegram by QR Code</h1>
-      <div class="text-start align-items-center justify-content-center d-flex">
-        <ol class="list-group list-group-numbered">
-          <li class="list-group-item">Open Telegram on your phone</li>
-          <li class="list-group-item">Go to Settings &gt; Devices &gt; Link Desktop Device</li>
-          <li class="list-group-item">Point your phone at this screen to confirm login</li>
-        </ol>
+      <div class="flex justify-center text-start">
+        <ul class="pl-5 space-y-3 list-decimal list-inside ">
+          <li>Open Telegram on your phone</li>
+          <li>Go to Settings &gt; Devices &gt; Link Desktop Device</li>
+          <li>Point your phone at this screen to confirm login</li>
+        </ul>
       </div>
 
       <div class="text-center mt-4">
-        <button type="button" class="btn" (click)="isMobile = true">LOG IN BY PHONE NUMBER</button>
+        <button type="button" class="btn p-5 rounded hover:bg-primary-dark/[.5]" (click)="isMobile = true">LOG IN BY
+          PHONE
+          NUMBER
+        </button>
       </div>
     </div>
+
   } @else {
-    <div class="text-center container mt-4 align-text-center justify-content-center">
-      <img src="./assets/img/telegram-icon.svg" alt="telegram logo" class="img-fluid" width="160">
+    <div class="items-center justify-center mt-4 text-center">
+      <div class="flex justify-center items-center">
+        <img src="./assets/img/telegram-icon.svg" alt="telegram logo" class="img-fluid" width="160">
+      </div>
       <h1>Telegram</h1>
-      <p class="note w-300">Please confirm your country code
+      <p class="note">Please confirm your country code
         and enter your phone number.</p>
 
-      <div class="mb-2 input-countries d-flex align-items-center justify-content-start container ">
-        <p-dropdown [options]="countries" [(ngModel)]="selectedCountry" optionLabel="name" [showClear]="false"
+      <div
+        class="mb-2 mx-auto h-10 flex bg-background-dark border-2 border-solid border-splitter-light dark:border-splitter-dark rounded"
+        style="width:300px">
+        <p-dropdown [options]="countries" [(ngModel)]="selectedCountry" optionLabel="name"
+                    [showClear]="false"
                     placeholder="Select a Country">
           <ng-template pTemplate="selectedItem">
-            <div class="d-flex justify-content-between align-items-center  mx-2 my-2" *ngIf="selectedCountry">
+            <div class="flex justify-between items-center mx-2" *ngIf="selectedCountry">
               <img [src]="'https://flagcdn.com/32x24/' + selectedCountry.code.toLowerCase() + '.png'"
                    [class]="'flag flag-' + 'AD'" style="width: 18px"/>
               <div>{{ selectedCountry.name }}</div>
@@ -52,7 +65,7 @@
             </div>
           </ng-template>
           <ng-template let-country pTemplate="item">
-            <div class="d-flex justify-content-between align-items-center mx-2 my-2">
+            <div class="flex justify-between items-center mx-2">
               <img [src]="'https://flagcdn.com/32x24/' + country.code.toLowerCase() + '.png'"
                    [class]="'ml-2 flag flag-' + 'AD'" style="width: 18px"/>
               <div>{{ country.name }}</div>
@@ -62,26 +75,49 @@
         </p-dropdown>
       </div>
       <br>
-      <input type="text" pInputText [(ngModel)]="selectedCountry.user_phone"
+      <input type="text"
+             class="bg-background-light dark:bg-background-dark
+             border-2 border-solid border-splitter-light dark:border-splitter-dark"
+             pInputText
+             [(ngModel)]="selectedCountry.user_phone"
              placeholder="Phone number" *ngIf="!showTelegramCode">
 
       <div *ngIf="showTelegramCode">
-        <input type="text" pInputText #telegramCode [(ngModel)]="telegramCodeValue" placeholder="Enter code from Telegram"
-       (ngModelChange)="telegramCodeValue.length == 5 ? onSignIn(telegramCodeValue) : null">
+        <input type="text" pInputText #telegramCode [(ngModel)]="telegramCodeValue"
+               placeholder="Enter code from Telegram"
+               (ngModelChange)="telegramCodeValue.length == 5 ? onSignIn(telegramCodeValue) : null">
       </div>
 
       <br>
 
-      <button type="button" class="btn mt-3 next" *ngIf="!showTelegramCode"
+      <button type="button" class="btn bg-primary-dark mt-3 p-5 rounded" *ngIf="!showTelegramCode"
               (click)="onSendPhoneNumber(selectedCountry.user_phone);">Send Phone number
       </button>
 
 
       <div class="text-center mt-4">
-        <button type="button" class="btn" (click)="isMobile = false">LOG IN BY QR CODE</button>
+        <button type="button" class="btn p-5 rounded hover:bg-primary-dark/[.5]" (click)="isMobile = false">LOG IN BY QR
+          CODE
+        </button>
       </div>
     </div>
+
+
   }
+
+  <ng-template #alertTemplate class="mb-4">
+    <div class="w-30 p-4 mx-auto my-auto" role="alert"
+         style="width: 300px; z-index: 999; position: absolute; top: 0; left: 0;">
+      <div class="bg-red-500 text-white font-bold rounded-t px-4 py-2">
+        Warning
+      </div>
+      <div class="border border-t-0 border-red-400 rounded-b bg-red-100 px-4 py-3 text-black">
+        <p>If you have <b>Two-Factor authentication</b>, disable it, otherwise you won't be able to log in. We
+          apologize, this
+          will be fixed soon</p>
+      </div>
+    </div>
+  </ng-template>
 
 
   <p-toast [life]="5000"></p-toast>

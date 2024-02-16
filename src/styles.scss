@@ -9,9 +9,26 @@
 @import "primeng/resources/themes/lara-dark-blue/theme.css";
 @import "primeng/resources/primeng.css";
 
+/*
+:root {
+  --text-color: theme('colors.text.light');
+  --secondary: theme('colors.secondary.light');
+  --backgroud-color: theme('colors.background.light');
+  --background-image: theme('backgroundImage.light');
+  --splitter: theme('colors.splitter.light');
+}
+
+.dark {
+  --text-color: theme('colors.text.dark');
+  --secondary: theme('colors.secondary.dark');
+  --backgroud-color: theme('colors.background.dark');
+  --background-image: theme('backgroundImage.dark');
+  --splitter: theme('colors.splitter.dark');
+}
+*/
+
 body {
-    background-color: var(--main-content-background-color) !important;
-    background-image: var(--backgroud-image);
-    font-family: var(--font-family);
-    color: var(--text-color);
+  color: var(--text-color);
+  background-color: var(--backgroud-color);
+  background-image: var(--background-image);
 }

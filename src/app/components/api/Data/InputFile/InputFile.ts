@@ -6,7 +6,7 @@ export class InputFile {
   _ = 'inputFile';
 
 
-  constructor(name: string, md5_checksum: string, parts: number = 0,  id: number = Math.floor(Math.random() * 1000000000)) {
+  constructor(name: string, md5_checksum: string, parts: number = 1,  id: number = Math.floor(Math.random() * 1000000000)) {
     this.parts = parts;
     this.name = name;
     this.md5_checksum = md5_checksum;

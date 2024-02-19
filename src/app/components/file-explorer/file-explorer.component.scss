@@ -8,10 +8,17 @@
     align-items: center;
 
   }
+
+  .p-toast-message-text {
+    color: var(--text-color);
+  }
+
+  .p-icon-wrapper {
+    color: var(--text-color);
+  }
 }
 
 .file-drop {
   //background-color: rgba(theme('colors.white'), 0.1);
 }
-
 

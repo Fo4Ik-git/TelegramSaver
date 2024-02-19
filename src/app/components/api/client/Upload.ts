@@ -12,8 +12,6 @@ export class Upload {
   }
 
 
-
-
   /**
    * This method is used to get a file from a specific location.
    *
@@ -64,7 +62,7 @@ export class Upload {
     }
   }
 
-  async saveFilePart(file_id: number, bytes: Uint8Array, file_part: number = 0 ) {
+  public async saveFilePart(file_id: number, bytes: Uint8Array, file_part: number = 0 ) {
     return this.telegramService.call('upload.saveFilePart', {
       file_id: file_id,
       file_part: file_part,
@@ -72,7 +70,7 @@ export class Upload {
     });
   }
 
-  async saveBigFilePart(file_id: number, file_part: number, file_total_parts: number, bytes: Uint8Array) {
+  public async saveBigFilePart(file_id: number, file_part: number, file_total_parts: number, bytes: Uint8Array) {
     return this.telegramService.call('upload.saveBigFilePart', {
       file_id: file_id,
       file_part: file_part,

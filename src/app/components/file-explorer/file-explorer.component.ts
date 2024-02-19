@@ -1,4 +1,4 @@
-import {Component, ElementRef, HostListener, OnInit, ViewChild} from '@angular/core';
+import {Component, HostListener, Input, OnInit} from '@angular/core';
 import {ContextMenuModule} from "primeng/contextmenu";
 import {TelegramService} from "../../services/telegram.service";
 import {Messages} from "../api/client/Messages";
@@ -11,6 +11,7 @@ import {FileUploadModule} from "primeng/fileupload";
 import {MessageService} from 'primeng/api';
 import {ToastModule} from "primeng/toast";
 import {Upload} from '../api/client/Upload';
+import {ProgressServiceService} from "../../services/progress-service.service";
 
 @Component({
   selector: 'app-file-explorer',
@@ -29,7 +30,7 @@ import {Upload} from '../api/client/Upload';
 })
 export class FileExplorerComponent implements OnInit {
 
-  messages = new Messages(this.telegramService);
+  messages = new Messages(this.telegramService, this.progressService);
   upload = new Upload(this.telegramService);
   contacts = new Contacts(this.telegramService);
   telegramConfig = telegramConfig;
@@ -37,12 +38,16 @@ export class FileExplorerComponent implements OnInit {
   files: any;
   uploadedFiles: any[] = [];
   currentPath: string = 'root';
-  @ViewChild('fileInput') fileInput!: ElementRef;
+  @Input() isMobile!: boolean;
   isOnDrugOverCalled = false;
   maxFileSize!: number;
+  progress: number = 0;
+  folder: string = 'root';
   private timeoutId: any;
 
-  constructor(private telegramService: TelegramService, private messageService: MessageService) {
+  constructor(private telegramService: TelegramService,
+              private progressService: ProgressServiceService,
+              private messageService: MessageService) {
     this.telegramService.messageService = this.messageService;
   }
 
@@ -96,20 +101,22 @@ export class FileExplorerComponent implements OnInit {
   onDrag(event: any) {
     event.preventDefault();
     clearTimeout(this.timeoutId);
+
+    console.log(this.isOnDrugOverCalled);
+
+    if (!this.isOnDrugOverCalled) this.isOnDrugOverCalled = true;
+
     let files = event.target.files || event.dataTransfer.files;
 
     for (let file of files) {
       if (file.size > 500 * 1024 * 1024) {
-        /*file = {
+        this.uploadedFiles.push({
+          file: null,
           name: file.name,
-          file: file
-        }
-        this.onUpload(file)*/
-        this.messageService.add({
-          severity: 'error',
-          summary: 'File is too big',
-          detail: 'File size: ' + this.formatFileSize(file.size)
-        });
+          size: this.formatFileSize(file.size),
+          src: 'assets/images/file.png'
+        })
+        this.onUpload(file)
         file = null;
       }
 
@@ -141,21 +148,33 @@ export class FileExplorerComponent implements OnInit {
     }
   }
 
-  async onUpload(file?: any) {
+  async onUpload(file?: File) {
+    this.progressService?.progress$.subscribe(progress => {
+      // Update the progress bar in your component
+      this.progress = progress;
+    });
+
+
     if (file) {
-      // this.uploadedFiles.push(file);
+      await this.messages.sendMediaToUser(
+        this.telegramConfig.bot_username,
+        file,
+        this.folder
+      )
     } else {
       for (let file of this.uploadedFiles) {
         await this.messages.sendMediaToUser(
           this.telegramConfig.bot_username,
           file.file,
-          file.name
+          this.folder
         )
       }
     }
-    this.messageService.add({severity: 'info', summary: 'File Uploaded', detail: ''});
+
+
     this.uploadedFiles = [];
     this.isOnDrugOverCalled = false;
+    this.progress = 0;
 
     this.getBotMessages();
   }
@@ -167,5 +186,10 @@ export class FileExplorerComponent implements OnInit {
 
   removeFile(i: number) {
     this.uploadedFiles.splice(i, 1);
+  }
+
+  openFileInput() {
+    let input = document.getElementById('fileInput');
+    input?.click();
   }
 }

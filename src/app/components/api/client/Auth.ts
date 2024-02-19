@@ -34,7 +34,7 @@ export class Auth {
           localStorage.setItem('user', JSON.stringify(user));
           this.configService.saveConfig();
 
-          // window.location.reload();
+          window.location.reload();
           break;
         }
       }

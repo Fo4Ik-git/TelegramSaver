@@ -5,11 +5,22 @@ import {Contacts} from "./Contacts";
 import {InputPeerUser} from "../Data/InputPeer/InputPeerUser";
 import {InputPeerChat} from "../Data/InputPeer/InputPeerChat";
 import {InputMediaUploadedDocument} from "../Data/InputMedia/InputMediaUploadedDocument";
+import {Upload} from "./Upload";
+import {ProgressServiceService} from "../../../services/progress-service.service";
+import {DocumentAttributeFilename} from "../Data/DocumentAttribute/DocumentAttributeFilename";
 import {InputFile} from "../Data/InputFile/InputFile";
 import {InputFileBig} from "../Data/InputFile/InputFileBig";
 import {Md5} from "ts-md5/dist/esm/md5";
-import {DocumentAttributeFilename} from "../Data/DocumentAttribute/DocumentAttributeFilename";
-import {Upload} from "./Upload";
+import {ChangeDetectorRef} from "@angular/core";
+
+/*
+const uploadObservable: Observable<any> = from(filePartsArray).pipe(
+  // Используйте mergeMap для параллельной загрузки файлов
+  mergeMap((filePart) => {
+    return this.uploadFilePart(filePart);
+  }, 5) // 5 - количество параллельных операций
+);
+*/
 
 export class Messages {
   config = telegramConfig
@@ -17,8 +28,9 @@ export class Messages {
   upload = new Upload(this.telegramService);
   telegramConfig = telegramConfig;
   mtProto: any;
+  private changeDetectorRef!: ChangeDetectorRef;
 
-  constructor(private telegramService: TelegramService) {
+  constructor(private telegramService: TelegramService, private progressService?: ProgressServiceService) {
     this.mtProto = this.telegramService.mtProto;
   }
 
@@ -234,60 +246,114 @@ export class Messages {
   }
 
 
+  /*  async sendMediaToUser(username: string, file: File, message: string = '') {
+      const resolveUsername = await this.contacts.resolveUsername(username);
+
+      const uploadWorker = new Worker(new URL('../../../workers/uploadfile.worker', import.meta.url), {type: 'module'});
+      uploadWorker.postMessage({file, });
+      uploadWorker.onmessage = async ({data}) => {
+        console.log(data);
+      };
+    }*/
+
+
   async sendMediaToUser(username: string, file: File, message: string = '') {
-    let ResolveUsername = await this.contacts.resolveUsername(username);
-    let fileReader = new FileReader();
+    console.log("Sending media to user");
+    const resolveUsername = await this.contacts.resolveUsername(username);
+    const uint8Array = await this.readArrayBufferFromFile(file);
 
-    fileReader.readAsArrayBuffer(file);
-    fileReader.onload = async (e) => {
-      if (fileReader.result) {
-        let arrayBuffer = fileReader.result;
-        let uint8Array = new Uint8Array(arrayBuffer as ArrayBuffer);
 
-        let inputFile: InputFile | InputFileBig;
-        if (file.size > 10 * 1024 * 1024) {
-          inputFile = new InputFileBig(
-            file.name,
-            Math.ceil(file.size / 10 * 1024 * 1024)
-          );
-          //TODO : upload big file
+    const inputFile = this.createInputFile(file, uint8Array);
 
+    await this.uploadFileParts(inputFile, uint8Array, inputFile.parts);
+
+    const inputMediaUploadedDocument = new InputMediaUploadedDocument(
+      inputFile,
+      file.type,
+      [new DocumentAttributeFilename(file.name)]
+    );
+
+    const inputPeerUser = new InputPeerUser(
+      resolveUsername.users[0].id,
+      resolveUsername.users[0].access_hash
+    );
+
+    const uploadMediaResponse = await this.uploadMedia(inputPeerUser, inputMediaUploadedDocument);
+
+    const sendMediaResponse = this.sendMedia(inputPeerUser, inputMediaUploadedDocument, message);
+
+    this.telegramService.messageService?.add({
+      severity: 'info',
+      summary: 'File Uploaded',
+      detail: ''
+    });
+  }
+
+  async readArrayBufferFromFile(file: File): Promise<Uint8Array> {
+    return new Promise((resolve, reject) => {
+      const fileReader = new FileReader();
+
+      fileReader.onload = (e) => {
+        if (fileReader.result) {
+          const arrayBuffer = fileReader.result as ArrayBuffer;
+          const uint8Array = new Uint8Array(arrayBuffer);
+          resolve(uint8Array);
         } else {
-          let md5 = new Md5()
-          inputFile = new InputFile(
-            file.name,
-            md5.appendStr(uint8Array.toString()).end()?.toString() as string
-          );
-
-          let saveFilePart = await this.upload.saveFilePart(
-            inputFile.id,
-            uint8Array
-          );
+          reject(new Error("Error reading file"));
         }
+      };
 
-        let inputMediaUploadedDocument = new InputMediaUploadedDocument(
-          inputFile,
-          file.type,
-          [new DocumentAttributeFilename(file.name)]
-        )
+      fileReader.readAsArrayBuffer(file);
+    });
+  }
 
-        let uploadMedia = await this.uploadMedia(
-          new InputPeerUser(
-            ResolveUsername.users[0].id,
-            ResolveUsername.users[0].access_hash
-          ),
-          inputMediaUploadedDocument
-        );
+  createInputFile(file: File, uint8Array: Uint8Array): InputFile | InputFileBig {
+    const parts = Math.ceil(uint8Array.length / (512 * 1024));
 
-        let sendMedia = this.sendMedia(
-          new InputPeerUser(
-            ResolveUsername.users[0].id,
-            ResolveUsername.users[0].access_hash
-          ),
-          inputMediaUploadedDocument,
-          message
-        );
-      }
+    if (file.size >= 10 * 1024 * 1024) {
+      console.log("Big file");
+      return new InputFileBig(file.name, parts);
+    } else {
+      console.log("Small file");
+      const md5 = new Md5();
+      const md5Hash = md5.appendStr(uint8Array.toString()).end()?.toString() as string;
+      return new InputFile(file.name, md5Hash, parts);
     }
   }
+
+  async uploadFileParts(inputFile: InputFile | InputFileBig, uint8Array: Uint8Array, parts: number) {
+    //add timer start
+
+    this.telegramService.messageService?.add({
+      severity: 'info',
+      summary: 'File Uploading...',
+      detail: 'Please do not close the window'
+    });
+
+    const uploadPromises = Array.from({length: parts}, async (_, i) => {
+      const start = i * 512 * 1024;
+      const end = (i + 1) * 512 * 1024;
+
+      const uploadPromise = inputFile.constructor === InputFileBig ?
+        this.upload.saveBigFilePart(inputFile.id, i, parts, uint8Array.slice(start, end)) :
+        this.upload.saveFilePart(inputFile.id, uint8Array.slice(start, end), i);
+
+      const progress = (i + 1) / parts * 100; // Calculate progress percentage for each chunk
+
+      return new Promise<void>((resolve) => {
+        uploadPromise.then(() => {
+          // Emit progress event
+          this.progressService?.updateProgress(progress);
+          console.log("Progress: ", progress);
+          resolve();
+        });
+      });
+    });
+
+    await Promise.all(uploadPromises);
+
+
+    console.timeEnd("uploadFileParts");
+  }
+
 }

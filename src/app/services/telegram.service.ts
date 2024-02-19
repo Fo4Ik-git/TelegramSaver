@@ -43,8 +43,6 @@ export class TelegramService {
     try {
       return await this.mtProto.call(method, params, options);
     } catch (error) {
-      console.log(`${method} error:`, error);
-
       const {error_code, error_message} = error as ErrorWithDetails;
 
       if (error_code === 420) {
@@ -58,9 +56,7 @@ export class TelegramService {
         return this.call(method, params, options);
       }
 
-      if (error_code === 400) {
-        this.notify('Error: ' + error_message);
-      }
+      this.notify('Error: ' + error_message);
 
       return Promise.reject(error);
     }
@@ -139,3 +135,4 @@ export class TelegramService {
   }
 */
 }
+

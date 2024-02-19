@@ -9,6 +9,7 @@ export class ConfigService {
   userConfig: any = JSON.parse(localStorage.getItem('userConfig') || '{}');
   telegramConfig = telegramConfig;
   userDefaultConfig = userConfig;
+  progress: any;
 
 
   constructor() {

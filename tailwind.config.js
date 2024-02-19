@@ -5,6 +5,7 @@ module.exports = {
   // darkMode: 'media',
   content: [
     "./src/**/*.{html,ts}",
+    "./node_modules/flowbite/**/*.js"
   ],
   theme: {
     extend: {
@@ -38,6 +39,8 @@ module.exports = {
       ...colors
     }
   },
-  plugins: [],
+  plugins: [
+    require('flowbite/plugin')
+  ]
 }
 

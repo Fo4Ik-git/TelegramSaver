@@ -1,38 +1,34 @@
 <div>
   @if (authorization) {
 
-    @if (!isMobile) {
-      <main class="flex">
-        <!-- <div class="sidebar">
-           <app-side-bar-menu
-             [userProfilePhoto]="userProfilePhoto"
-             [isMobile]="isMobile"
-             [user]="user"
-           ></app-side-bar-menu>
-         </div>-->
-        <div>
-          <app-side-bar-menu
-            [userProfilePhoto]="userProfilePhoto"
-            [isMobile]="isMobile"
-            [user]="user"
-          ></app-side-bar-menu>
-        </div>
-        <div class="w-full h-screen">
-          <app-file-explorer></app-file-explorer>
-        </div>
+    <main class="flex">
+      <!-- <div class="sidebar">
+         <app-side-bar-menu
+           [userProfilePhoto]="userProfilePhoto"
+           [isMobile]="isMobile"
+           [user]="user"
+         ></app-side-bar-menu>
+       </div>-->
+      <div>
+        <app-side-bar-menu
+          [userProfilePhoto]="userProfilePhoto"
+          [isMobile]="isMobile"
+          [user]="user"
+        ></app-side-bar-menu>
+      </div>
+      <div class="w-full h-screen">
+        <app-file-explorer
+          #fileExplorerComponent
+          [isMobile]="isMobile"
+        ></app-file-explorer>
+      </div>
 
-      </main>
-    } @else {
-      <app-side-bar-menu
-        [userProfilePhoto]="userProfilePhoto"
-        [isMobile]="isMobile"
-        [user]="user"
-      ></app-side-bar-menu>
-    }
+    </main>
 
 
   } @else {
     <app-authentication [isMobile]="isMobile"></app-authentication>
   }
 </div>
+
 

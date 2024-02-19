@@ -17,6 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
+            "baseHref": "/",
             "outputPath": "dist/telegram-saver",
             "index": "src/index.html",
             "browser": "src/main.ts",
@@ -32,7 +33,9 @@
               "src/styles.scss"
             ],
             "scripts": [
-            ]
+              "node_modules/flowbite/dist/flowbite.js"
+            ],
+            "webWorkerTsConfig": "tsconfig.worker.json"
           },
           "configurations": {
             "production": {
@@ -99,7 +102,8 @@
               "src/styles.scss"
             ],
             "scripts": [
-            ]
+            ],
+            "webWorkerTsConfig": "tsconfig.worker.json"
           }
         }
       }

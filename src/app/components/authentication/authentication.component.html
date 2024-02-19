@@ -8,7 +8,7 @@
 <input #telegramCode type="text">
 <button (click)="onSignIn(telegramCode.value); telegramCode.value = ''">Send code</button>-->
 
-<ng-container *ngTemplateOutlet="alertTemplate"></ng-container>
+
 <div>
   @if (!isMobile) {
     <div class="items-center justify-center mt-4 text-center">
@@ -52,7 +52,7 @@
 
       <div
         class="mb-2 mx-auto h-10 flex bg-background-dark border-2 border-solid border-splitter-light dark:border-splitter-dark rounded"
-        style="width:300px">
+        style="width:300px" *ngIf="!showTelegramCode">
         <p-dropdown [options]="countries" [(ngModel)]="selectedCountry" optionLabel="name"
                     [showClear]="false"
                     placeholder="Select a Country">
@@ -83,7 +83,9 @@
              placeholder="Phone number" *ngIf="!showTelegramCode">
 
       <div *ngIf="showTelegramCode">
-        <input type="text" pInputText #telegramCode [(ngModel)]="telegramCodeValue"
+        <input type="text" class="bg-background-light dark:bg-background-dark
+             border-2 border-solid border-splitter-light dark:border-splitter-dark"
+               pInputText #telegramCode [(ngModel)]="telegramCodeValue"
                placeholder="Enter code from Telegram"
                (ngModelChange)="telegramCodeValue.length == 5 ? onSignIn(telegramCodeValue) : null">
       </div>
@@ -104,10 +106,10 @@
 
 
   }
-
+  <ng-container *ngTemplateOutlet="alertTemplate"></ng-container>
   <ng-template #alertTemplate class="mb-4">
     <div class="w-30 p-4 mx-auto my-auto" role="alert"
-         style="width: 300px; z-index: 999; position: absolute; top: 0; left: 0;">
+         style="width: 300px; z-index: 999; position: absolute; bottom: 0; left: 0;">
       <div class="bg-red-500 text-white font-bold rounded-t px-4 py-2">
         Warning
       </div>
@@ -120,5 +122,7 @@
   </ng-template>
 
 
-  <p-toast [life]="5000"></p-toast>
+  <p-toast [breakpoints]="{'920px': {width: '100%', right: '0', left: '0'}}"
+           [life]="5000"
+           [styleClass]="isMobile? 'mobile-text-error' : ''"></p-toast>
 </div>

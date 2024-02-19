@@ -74,6 +74,7 @@ export class AuthenticationComponent implements OnInit {
 
   async getCountries() {
     let tgCountries = (await this.help.getCountriesList('en', 0)).countries;
+    this.getUserCountry();
     this.countries = tgCountries.map((country: {
       default_name: any;
       country_codes: { country_code: any; }[];
@@ -84,7 +85,7 @@ export class AuthenticationComponent implements OnInit {
       code: country.iso2,
       user_phone: '+' + country.country_codes[0].country_code,
     }))
-    this.getUserCountry();
+
   }
 
   async getUserCountry() {
@@ -93,6 +94,7 @@ export class AuthenticationComponent implements OnInit {
     let data = await response.json();
     let country = data.country;
     let countryData = this.countries.find((c: { code: any; }) => c.code === country);
+    console.log('countryData:', countryData);
     this.selectedCountry = countryData;
   }
 
@@ -126,6 +128,6 @@ export class AuthenticationComponent implements OnInit {
 
     console.log('authorization:', authorization);
     console.log('user:', user);
-    // window.location.reload();
+    window.location.reload();
   }
 }

@@ -18,38 +18,17 @@
     color: var(--text-color);
   }
 
+  @media (max-width: 1000px) {
+    .p-toast-message-text {
+      color: black;
+    }
 
-  /*.p-dropdown-items-wrapper {
-    background-color: var(--main-content-background-color);
-    color: var(--text-color);
-    overflow: auto;
-    //max-height: 300px !important;
-
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-
-    &::-webkit-scrollbar {
-      display: none;
+    .p-icon-wrapper {
+      color: black;
     }
   }
-
-  .p-inputwrapper-filled {
-    background-color: var(--main-content-background-color);
-    color: var(--text-color);
-  }
-
-  .p-inputwrapper {
-    width: 100%;
-  }
-
-  .p-dropdown-label {
-    color: var(--color-text-secondary);
-  }
-
-  .p-dropdown-trigger {
-    text-align: right;
-  }*/
 }
+
 
 .note {
   color: var(--color-text-secondary);

@@ -1,81 +1,61 @@
-@if (!isMobile) {
+<div class="fixed z-50 w-full h-16 max-w-lg -translate-x-1/2 rounded-t-lg bottom-0 left-1/2 menu-bar">
+  <ul class="grid h-full max-w-lg mx-1 grid-cols-3">
+    <li class="inline-flex flex-col items-center justify-center ">
+      <button data-dropdown-toggle="dropdownHover"
+              data-dropdown-trigger="hover"
+              id="user">
+        <img [src]="userProfilePhoto" alt="user_logo" class="img-fluid h-12">
+      </button>
+    </li>
+    <li (click)="openUpload()" class="inline-flex flex-col items-center justify-center">
+      <i class="pi pi-plus-circle" style="font-size: 2rem"></i>
+    </li>
+    <li class="inline-flex flex-col items-center justify-center ">
+      <i class="pi pi-star" style="font-size: 2rem"></i>
+    </li>
+  </ul>
+</div>
 
-  <div
-    class="menu border-r-2 border-splitter-light dark:border-splitter">
-    <!--  User-->
-    <div class="user text-center pt-2">
-      <div class="flex justify-center items-center">
-        <img [src]="userProfilePhoto" alt="user_logo" class="img-fluid">
-      </div>
-      <span class="text">{{ user.first_name }} {{ user.fast_name }}</span>
-    </div>
-    <hr class="border-1 border-splitter-light dark:border-splitter">
-
-
-    <ul class="content container">
-      <li class="item">
-        <i class="pi pi-folder-open"></i>
-        <span>
-        File Explorer
-      </span>
-      </li>
-      <li class="item">
-        <i class="pi pi-star"></i>
-        <span>
-        Favorites
-      </span>
-      </li>
-    </ul>
-
-
-    <ul class="settings container mb-4">
-      <hr class="border-1 border-splitter-light dark:border-splitter">
-      <li (click)="toggleTheme()" class="item">
-        <i [ngClass]="isDarkTheme ? 'pi pi-sun' : 'pi pi-moon'"></i>
-        <span>
-        @if (isDarkTheme) {
-          Light Theme
-        } @else {
-          Dark Theme
-        }
-      </span>
-      </li>
-      <li class="item">
-        <i class="pi pi-cog"></i>
-        <span>
-        Settings
-      </span>
-      </li>
-      <!--<li (click)="logout()" class="item">
-        <i class="pi pi-sort-up"></i>
-        <span>
-          Log out
-        </span>
-      </li>-->
-    </ul>
-
-  </div>
-} @else {
-  <div
-    class="fixed z-50 w-full h-16 max-w-lg -translate-x-1/2 rounded-t-lg bottom-0 left-1/2 menu-bar">
-    <ul class="grid h-full max-w-lg mx-1 grid-cols-5">
-      <li class="inline-flex flex-col items-center justify-center " (click)="toggleTheme()">
-        <i [ngClass]="isDarkTheme ? 'pi pi-sun' : 'pi pi-moon'" style="font-size: 2rem"></i>
-      </li>
-      <li class="inline-flex flex-col items-center justify-center" (click)="open('settings')">
-        <i class="pi pi-cog" style="font-size: 2rem"></i>
-      </li>
-      <li class="inline-flex flex-col items-center justify-center ">
-        <i class="pi pi-plus-circle" style="font-size: 2rem"></i>
-      </li>
-      <li class="inline-flex flex-col items-center justify-center ">
-        <i class="pi pi-star" style="font-size: 2rem"></i>
-      </li>
-      <li class="inline-flex flex-col items-center justify-center ">
-        <i class="pi pi-folder-open" style="font-size: 2rem"></i>
-      </li>
-    </ul>
-  </div>
-
-}
-
+<div class="z-10 hidden bg-background-light divide-y divide-gray-100 rounded-lg shadow w-50 dark:bg-background-dark"
+     id="dropdownHover">
+  <ul aria-labelledby="user" class="py-2 text-sm text-gray-700 dark:text-gray-200">
+    <li (click)="toggleTheme()"
+        class="px-4 py-2 hover:bg-background-dark/[.1] dark:hover:bg-background-light/[.1] w-full flex items-center">
+      @if (isDarkTheme) {
+        <svg class="h-6 w-6 text-text-light dark:text-text-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="5"/>
+          <line x1="12" y1="1" x2="12" y2="3"/>
+          <line x1="12" y1="21" x2="12" y2="23"/>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+          <line x1="1" y1="12" x2="3" y2="12"/>
+          <line x1="21" y1="12" x2="23" y2="12"/>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+        </svg>
+        <span class="text-2xl ml-2">Light Theme</span>
+      } @else {
+        <svg class="h-6 w-6 text-text-light dark:text-text-dark" width="24" height="24" viewBox="0 0 24 24"
+             stroke-width="2"
+             stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z"/>
+          <path d="M16.2 4a9.03 9.03 0 1 0 3.9 12a6.5 6.5 0 1 1 -3.9 -12"/>
+        </svg>
+        <span class="text-2xl ml-2">Dark Theme</span>
+      }
+    </li>
+    <li
+      class="px-4 py-2 hover:bg-red-500 dark:hover:text-white w-full flex items-center">
+      <svg class="h-6 w-6 text-text-light dark:text-text-dark" fill="none" stroke="currentColor" stroke-linecap="round"
+           stroke-linejoin="round"
+           stroke-width="2" viewBox="0 0 24 24">
+        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+        <polyline points="16 17 21 12 16 7"/>
+        <line x1="21" x2="9" y1="12" y2="12"/>
+      </svg>
+      <span class="text-2xl ml-2">Log out</span>
+    </li>
+  </ul>
+</div>

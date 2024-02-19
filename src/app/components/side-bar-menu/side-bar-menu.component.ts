@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, ElementRef, Input, OnInit, Renderer2} from '@angular/core';
 import {AvatarModule} from "primeng/avatar";
 import {ConfigService} from "../../config/config.service";
 import {NgClass} from "@angular/common";
@@ -22,11 +22,12 @@ export class SideBarMenuComponent implements OnInit {
   @Input() isMobile!: boolean;
   @Input() userProfilePhoto!: string;
   @Input() user!: any;
+  // @Output() uploadRequested = new EventEmitter;
   isDarkTheme!: boolean; // Замените на логику определения темы
   userConfig: any = JSON.parse(localStorage.getItem('userConfig') || '{}');
   items: MenuItem[] | undefined;
 
-  constructor(private configService: ConfigService) {
+  constructor(private configService: ConfigService, private renderer: Renderer2, private el: ElementRef) {
 
   }
 
@@ -39,9 +40,9 @@ export class SideBarMenuComponent implements OnInit {
     this.configService.changeTheme()
   }
 
-  open(window: string){
+  open(window: string) {
     switch (window) {
-      case 'settings':{
+      case 'settings': {
 
       }
     }
@@ -52,4 +53,13 @@ export class SideBarMenuComponent implements OnInit {
     window.location.reload();
   }
 
+  openUpload() {
+    /*let input = document.getElementById('fileInput');
+    console.log(input);
+    input?.click();*/
+
+    //get input element
+    let input = this.renderer.selectRootElement('#fileInput');
+    input?.click();
+  }
 }

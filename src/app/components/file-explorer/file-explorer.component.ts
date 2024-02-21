@@ -45,6 +45,7 @@ export class FileExplorerComponent implements OnInit {
   user = JSON.parse(localStorage.getItem('user') || '{}');
 
   telegramFiles: any;
+  selectedFiles: any[] = [];
   uploadedFiles: any[] = [];
 
   @Input() isMobile!: boolean;
@@ -53,12 +54,14 @@ export class FileExplorerComponent implements OnInit {
   progress: number = 0;
   folder: string = 'root';
   searchQuery: string = '';
+  private shiftPressed: boolean = false;
 
   navigationItems: MenuItem[] | undefined;
   home: MenuItem | undefined;
 
   protected readonly JSON = JSON;
   private timeoutId: any;
+
 
   constructor(private telegramService: TelegramService,
               private progressService: ProgressServiceService,
@@ -82,6 +85,20 @@ export class FileExplorerComponent implements OnInit {
 
   @HostListener("onSelect", ["$event"]) onSelect(event: any) {
     clearTimeout(this.timeoutId);
+  }
+
+  @HostListener('window:keydown', ['$event'])
+  keyDown(event: KeyboardEvent) {
+    if (event.key === 'Shift') {
+      this.shiftPressed = true;
+    }
+  }
+
+  @HostListener('window:keyup', ['$event'])
+  keyUp(event: KeyboardEvent) {
+    if (event.key === 'Shift') {
+      this.shiftPressed = false;
+    }
   }
 
   ngOnInit() {
@@ -241,6 +258,35 @@ export class FileExplorerComponent implements OnInit {
       return this.telegramFiles.filter((file: any) => file.name.includes(this.searchQuery));
     } else {
       return this.telegramFiles;
+    }
+  }
+
+  toggleFileSelection(file:any) {
+    if (this.shiftPressed) {
+      // Если клавиша SHIFT нажата, добавьте файл в массив selectedFiles
+      const index = this.selectedFiles.indexOf(file);
+      if (index > -1) {
+        this.selectedFiles.splice(index, 1);
+      } else {
+        this.selectedFiles.push(file);
+      }
+    } else {
+      // Если клавиша SHIFT не нажата, замените массив selectedFiles
+      if (this.selectedFiles.includes(file)) {
+        this.selectedFiles = [];
+      } else {
+        this.selectedFiles = [file];
+      }
+    }
+  }
+
+  isFileSelected(file: any) {
+    return this.selectedFiles.includes(file);
+  }
+
+  clearSelection(event: Event) {
+    if (event.target === event.currentTarget) {
+      this.selectedFiles = [];
     }
   }
 }

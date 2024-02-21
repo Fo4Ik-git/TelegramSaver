@@ -1,4 +1,4 @@
-<main class="h-full">
+<main class="h-full" (click)="clearSelection($event)">
 
   @if (!isOnDrugOverCalled) {
     <!--<div class="bg-black/[.1] dark:bg-white/[.1] h-full items-center">
@@ -213,7 +213,10 @@
     <!--files-->
     <section class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 p-2">
       @for (file of displayedFiles(); track file.name) {
-        <div class="flex flex-col items-center justify-center p-4 bg-white/[.3] dark:bg-black/[.3] rounded" pDraggable>
+        <div
+          class="flex flex-col items-center justify-center p-4 bg-white/[.3] dark:bg-black/[.3] rounded border border-transparent"
+          pDraggable
+          [ngClass]="{'selected': isFileSelected(file)}" (click)="toggleFileSelection(file)">
           <img *ngIf="file.src && file.src.startsWith('data:image'); else noImage" [src]="file.src"
                class="w-12 h-12 rounded" alt="{{file.name}}">
           <p class="text-text-light dark:text-text-dark break-all select-none">{{ file.name }}</p>

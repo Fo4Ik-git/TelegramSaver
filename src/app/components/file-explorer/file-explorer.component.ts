@@ -3,7 +3,7 @@ import {ContextMenuModule} from "primeng/contextmenu";
 import {TelegramService} from "../../services/telegram.service";
 import {Messages} from "../api/client/Messages";
 import {Contacts} from "../api/client/Contacts";
-import {telegramConfig} from '../../config/telegram.config';
+import {clickItems, telegramConfig} from '../../config/telegram.config';
 import {InputPeerUser} from "../api/Data/InputPeer/InputPeerUser";
 import {NgClass, NgForOf, NgIf, NgTemplateOutlet} from "@angular/common";
 import {DragDropModule} from 'primeng/dragdrop';
@@ -45,22 +45,28 @@ export class FileExplorerComponent implements OnInit {
   user = JSON.parse(localStorage.getItem('user') || '{}');
 
   telegramFiles: any;
+  folders: any[] = [];
   selectedFiles: any[] = [];
   uploadedFiles: any[] = [];
+  items = clickItems;
 
   @Input() isMobile!: boolean;
   isOnDrugOverCalled = false;
   maxFileSize!: number;
   progress: number = 0;
-  folder: string = 'root';
+  folder: string = '/';
   searchQuery: string = '';
-  private shiftPressed: boolean = false;
-
+  touchStartTimestamp: number | null = null;
+  multiSelectMode = false;
+  firstSelectedFile: any = null;
   navigationItems: MenuItem[] | undefined;
   home: MenuItem | undefined;
-
   protected readonly JSON = JSON;
+  private ctrlPressed: boolean = false;
   private timeoutId: any;
+
+  private selectionRectangle: HTMLElement | null = null;
+  private initialPoint = {x: 0, y: 0};
 
 
   constructor(private telegramService: TelegramService,
@@ -89,17 +95,66 @@ export class FileExplorerComponent implements OnInit {
 
   @HostListener('window:keydown', ['$event'])
   keyDown(event: KeyboardEvent) {
+    if (event.key === 'Control') {
+      this.ctrlPressed = true;
+    }
     if (event.key === 'Shift') {
-      this.shiftPressed = true;
+      this.multiSelectMode = true;
     }
   }
 
   @HostListener('window:keyup', ['$event'])
   keyUp(event: KeyboardEvent) {
+    if (event.key === 'Control') {
+      this.ctrlPressed = false;
+    }
     if (event.key === 'Shift') {
-      this.shiftPressed = false;
+      this.multiSelectMode = false;
+      this.firstSelectedFile = null;
     }
   }
+
+  /*
+    @HostListener('mousedown', ['$event'])
+    onMouseDown(event: MouseEvent) {
+      // Проверяем, что мышь не находится на файле
+      if (!event.target || !(event.target as HTMLElement).classList.contains('file')) {
+        this.initialPoint = {x: event.clientX, y: event.clientY};
+        this.selectionRectangle = document.createElement('div');
+        this.selectionRectangle.style.border = '1px solid var(--primary)';
+        this.selectionRectangle.style.position = 'fixed';
+        this.selectionRectangle.style.pointerEvents = 'none';
+        this.selectionRectangle.style.left = `${this.initialPoint.x}px`;
+        this.selectionRectangle.style.top = `${this.initialPoint.y}px`;
+        this.selectionRectangle.style.width = '0px';
+        this.selectionRectangle.style.height = '0px';
+        document.body.appendChild(this.selectionRectangle);
+      }
+    }
+
+    @HostListener('mousemove', ['$event'])
+    onMouseMove(event: MouseEvent) {
+      if (this.selectionRectangle) {
+        const currentPoint = {x: event.clientX, y: event.clientY};
+        const width = Math.abs(currentPoint.x - this.initialPoint.x);
+        const height = Math.abs(currentPoint.y - this.initialPoint.y);
+        const left = currentPoint.x < this.initialPoint.x ? currentPoint.x : this.initialPoint.x;
+        const top = currentPoint.y < this.initialPoint.y ? currentPoint.y : this.initialPoint.y;
+        this.selectionRectangle.style.width = `${width}px`;
+        this.selectionRectangle.style.height = `${height}px`;
+        this.selectionRectangle.style.left = `${left}px`;
+        this.selectionRectangle.style.top = `${top}px`;
+      }
+
+    }
+
+    @HostListener('mouseup', ['$event'])
+    onMouseUp(event: MouseEvent) {
+      if (this.selectionRectangle) {
+        document.body.removeChild(this.selectionRectangle);
+        this.selectionRectangle = null;
+      }
+    }*/
 
   ngOnInit() {
     this.maxFileSize = this.user.premium ? 4 * 1024 * 1024 * 1024 : 2 * 1024 * 1024 * 1024;
@@ -124,10 +179,29 @@ export class FileExplorerComponent implements OnInit {
       for (let i = 0; i < attributes.length; i++) {
         if (attributes[i]._ == 'documentAttributeFilename') {
           message.name = attributes[i].file_name;
+          // TODO get folder from message
+          // console.log(message.name + ' ' + message.folder);
           break;
         }
       }
     }
+
+    //create folders if its not /
+    /* for (let file of this.telegramFiles) {
+       if (file.folder !== '/') {
+         let folder = this.folders.find((folder: any) => folder.name === file.folder);
+         if (!folder) {
+           this.folders.push({
+             name: file.folder,
+             files: [file],
+             isEditing: false,
+             path: file.folder
+           });
+         } else {
+           folder.files.push(file);
+         }
+       }
+     }*/
     console.log(messages);
   }
 
@@ -261,9 +335,35 @@ export class FileExplorerComponent implements OnInit {
     }
   }
 
-  toggleFileSelection(file:any) {
-    if (this.shiftPressed) {
-      // Если клавиша SHIFT нажата, добавьте файл в массив selectedFiles
+  onTouchStart() {
+    this.touchStartTimestamp = Date.now();
+  }
+
+  onTouchEnd(file: any) {
+    const touchEndTimestamp = Date.now();
+    if (this.touchStartTimestamp && touchEndTimestamp - this.touchStartTimestamp > 150) {
+      this.multiSelectMode = true;
+      this.toggleFileSelection(file);
+    } else {
+      this.multiSelectMode = false;
+      this.selectedFiles = [file];
+    }
+    this.touchStartTimestamp = null;
+  }
+
+  toggleFileSelection(file: any) {
+    if (this.multiSelectMode) {
+      if (this.firstSelectedFile === null) {
+        this.firstSelectedFile = file;
+        this.selectedFiles.push(file);
+      } else {
+        const firstIndex = this.displayedFiles().indexOf(this.firstSelectedFile);
+        const lastIndex = this.displayedFiles().indexOf(file);
+        const startIndex = Math.min(firstIndex, lastIndex);
+        const endIndex = Math.max(firstIndex, lastIndex);
+        this.selectedFiles = this.displayedFiles().slice(startIndex, endIndex + 1);
+      }
+    } else if (this.ctrlPressed) {
       const index = this.selectedFiles.indexOf(file);
       if (index > -1) {
         this.selectedFiles.splice(index, 1);
@@ -271,14 +371,48 @@ export class FileExplorerComponent implements OnInit {
         this.selectedFiles.push(file);
       }
     } else {
-      // Если клавиша SHIFT не нажата, замените массив selectedFiles
       if (this.selectedFiles.includes(file)) {
         this.selectedFiles = [];
       } else {
         this.selectedFiles = [file];
       }
+      this.firstSelectedFile = null;
     }
   }
+
+  /*@HostListener('mousemove', ['$event'])
+  updateSelectionRectangle(event: MouseEvent) {
+    if (this.selectionRectangle) {
+      const currentPoint = {x: event.clientX, y: event.clientY};
+      const width = Math.abs(currentPoint.x - this.initialPoint.x);
+      const height = Math.abs(currentPoint.y - this.initialPoint.y);
+      const left = currentPoint.x < this.initialPoint.x ? currentPoint.x : this.initialPoint.x;
+      const top = currentPoint.y < this.initialPoint.y ? currentPoint.y : this.initialPoint.y;
+      this.selectionRectangle.style.width = `${width}px`;
+      this.selectionRectangle.style.height = `${height}px`;
+      this.selectionRectangle.style.left = `${left}px`;
+      this.selectionRectangle.style.top = `${top}px`;
+
+      // Обновляем выделенные файлы
+      this.selectedFiles = [];
+      const files = document.querySelectorAll('.file');
+      files.forEach((file) => {
+        const fileRect = file.getBoundingClientRect();
+        console.log(file.id);
+        if (
+          left < fileRect.right &&
+          left + width > fileRect.left &&
+          top < fileRect.bottom &&
+          top + height > fileRect.top
+        ) {
+          const selectedFile = this.displayedFiles().find((f: { id: string; }) => f.id === file.id);
+          if (selectedFile) {
+            this.selectedFiles.push(selectedFile);
+          }
+        }
+      });
+    }
+  }*/
 
   isFileSelected(file: any) {
     return this.selectedFiles.includes(file);
@@ -287,6 +421,35 @@ export class FileExplorerComponent implements OnInit {
   clearSelection(event: Event) {
     if (event.target === event.currentTarget) {
       this.selectedFiles = [];
+    }
+  }
+
+  createFolder() {
+    this.folders.push({
+      name: 'New Folder',
+      files: [],
+      isEditing: true,
+      path: this.folder
+    });
+  }
+
+  finishEditing(folder: any) {
+    folder.isEditing = false;
+  }
+
+  fileDropToFolder() {
+    if (this.selectedFiles) {
+      this.selectedFiles.forEach((file) => {
+        file.folder = this.folder;
+      });
+      this.telegramFiles = this.telegramFiles.filter((file: any) => !this.selectedFiles.includes(file));
+      //TODO Update files in telegram
+    }
+  }
+
+  dragStart(file: any) {
+    if (!this.selectedFiles.includes(file)) {
+      this.selectedFiles.push(file);
     }
   }
 }

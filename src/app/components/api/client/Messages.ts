@@ -258,7 +258,6 @@ export class Messages {
 
 
   async sendMediaToUser(username: string, file: File, message: string = '') {
-    console.log("Sending media to user");
     const resolveUsername = await this.contacts.resolveUsername(username);
     const uint8Array = await this.readArrayBufferFromFile(file);
 
@@ -324,6 +323,7 @@ export class Messages {
   async uploadFileParts(inputFile: InputFile | InputFileBig, uint8Array: Uint8Array, parts: number) {
     //add timer start
 
+
     this.telegramService.messageService?.add({
       severity: 'info',
       summary: 'File Uploading...',
@@ -334,26 +334,15 @@ export class Messages {
       const start = i * 512 * 1024;
       const end = (i + 1) * 512 * 1024;
 
-      const uploadPromise = inputFile.constructor === InputFileBig ?
+      return inputFile.constructor === InputFileBig ?
         this.upload.saveBigFilePart(inputFile.id, i, parts, uint8Array.slice(start, end)) :
         this.upload.saveFilePart(inputFile.id, uint8Array.slice(start, end), i);
-
-      const progress = (i + 1) / parts * 100; // Calculate progress percentage for each chunk
-
-      return new Promise<void>((resolve) => {
-        uploadPromise.then(() => {
-          // Emit progress event
-          this.progressService?.updateProgress(progress);
-          console.log("Progress: ", progress);
-          resolve();
-        });
-      });
     });
 
     await Promise.all(uploadPromises);
 
 
-    console.timeEnd("uploadFileParts");
+    console.timeEnd(`upload file ${inputFile.id} parts`);
   }
 
 }

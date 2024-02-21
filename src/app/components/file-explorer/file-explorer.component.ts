@@ -5,13 +5,16 @@ import {Messages} from "../api/client/Messages";
 import {Contacts} from "../api/client/Contacts";
 import {telegramConfig} from '../../config/telegram.config';
 import {InputPeerUser} from "../api/Data/InputPeer/InputPeerUser";
-import {NgForOf, NgIf} from "@angular/common";
+import {NgClass, NgForOf, NgIf, NgTemplateOutlet} from "@angular/common";
 import {DragDropModule} from 'primeng/dragdrop';
 import {FileUploadModule} from "primeng/fileupload";
-import {MessageService} from 'primeng/api';
+import {MenuItem, MessageService} from 'primeng/api';
 import {ToastModule} from "primeng/toast";
 import {Upload} from '../api/client/Upload';
 import {ProgressServiceService} from "../../services/progress-service.service";
+import {ToolbarModule} from "primeng/toolbar";
+import {BreadcrumbModule} from "primeng/breadcrumb";
+import {FormsModule} from "@angular/forms";
 
 @Component({
   selector: 'app-file-explorer',
@@ -23,6 +26,11 @@ import {ProgressServiceService} from "../../services/progress-service.service";
     FileUploadModule,
     ToastModule,
     NgForOf,
+    ToolbarModule,
+    BreadcrumbModule,
+    NgClass,
+    NgTemplateOutlet,
+    FormsModule,
   ],
   providers: [MessageService],
   templateUrl: './file-explorer.component.html',
@@ -35,14 +43,21 @@ export class FileExplorerComponent implements OnInit {
   contacts = new Contacts(this.telegramService);
   telegramConfig = telegramConfig;
   user = JSON.parse(localStorage.getItem('user') || '{}');
-  files: any;
+
+  telegramFiles: any;
   uploadedFiles: any[] = [];
-  currentPath: string = 'root';
+
   @Input() isMobile!: boolean;
   isOnDrugOverCalled = false;
   maxFileSize!: number;
   progress: number = 0;
   folder: string = 'root';
+  searchQuery: string = '';
+
+  navigationItems: MenuItem[] | undefined;
+  home: MenuItem | undefined;
+
+  protected readonly JSON = JSON;
   private timeoutId: any;
 
   constructor(private telegramService: TelegramService,
@@ -72,6 +87,7 @@ export class FileExplorerComponent implements OnInit {
   ngOnInit() {
     this.maxFileSize = this.user.premium ? 4 * 1024 * 1024 * 1024 : 2 * 1024 * 1024 * 1024;
     this.getBotMessages();
+    this.getNavigationItems();
   }
 
   async getBotMessages() {
@@ -84,9 +100,9 @@ export class FileExplorerComponent implements OnInit {
     );
 
     //filter messages only media != null
-    this.files = messages.messages.filter((message: any) => message.media != null && message.from_id.user_id === this.user.id);
+    this.telegramFiles = messages.messages.filter((message: any) => message.media != null && message.from_id.user_id === this.user.id);
     //add to files new value 'name' with value of attributes[i]._ == 'documentAttributeFilename'
-    for (let message of this.files) {
+    for (let message of this.telegramFiles) {
       let attributes = message.media.document.attributes;
       for (let i = 0; i < attributes.length; i++) {
         if (attributes[i]._ == 'documentAttributeFilename') {
@@ -101,8 +117,6 @@ export class FileExplorerComponent implements OnInit {
   onDrag(event: any) {
     event.preventDefault();
     clearTimeout(this.timeoutId);
-
-    console.log(this.isOnDrugOverCalled);
 
     if (!this.isOnDrugOverCalled) this.isOnDrugOverCalled = true;
 
@@ -135,7 +149,6 @@ export class FileExplorerComponent implements OnInit {
     }
   }
 
-
   formatFileSize(bytes: number): string {
     if (bytes < 1024) {
       return bytes + ' Bytes';
@@ -155,19 +168,39 @@ export class FileExplorerComponent implements OnInit {
     });
 
 
+    /*let uploadPromises = [];
+
     if (file) {
-      await this.messages.sendMediaToUser(
+      uploadPromises.push(this.messages.sendMediaToUser(
         this.telegramConfig.bot_username,
         file,
         this.folder
-      )
+      ));
     } else {
-      for (let file of this.uploadedFiles) {
-        await this.messages.sendMediaToUser(
+      uploadPromises = Array.from(this.uploadedFiles).map(file =>
+        this.messages.sendMediaToUser(
           this.telegramConfig.bot_username,
           file.file,
           this.folder
         )
+      );
+    }
+
+    await Promise.all(uploadPromises);*/
+
+    if (file) {
+      this.messages.sendMediaToUser(
+        this.telegramConfig.bot_username,
+        file,
+        this.folder
+      );
+    } else {
+      for (let file of this.uploadedFiles) {
+        this.messages.sendMediaToUser(
+          this.telegramConfig.bot_username,
+          file.file,
+          this.folder,
+        );
       }
     }
 
@@ -177,6 +210,16 @@ export class FileExplorerComponent implements OnInit {
     this.progress = 0;
 
     this.getBotMessages();
+  }
+
+  getNavigationItems() {
+    /*for (let file of this.telegramFiles) {
+      this.navigationItems?.push({
+        label: file.name,
+      })
+    }*/
+    this.home = {icon: 'pi pi-home', routerLink: '/'}
+
   }
 
   onCancel() {
@@ -191,5 +234,13 @@ export class FileExplorerComponent implements OnInit {
   openFileInput() {
     let input = document.getElementById('fileInput');
     input?.click();
+  }
+
+  displayedFiles() {
+    if (this.searchQuery) {
+      return this.telegramFiles.filter((file: any) => file.name.includes(this.searchQuery));
+    } else {
+      return this.telegramFiles;
+    }
   }
 }

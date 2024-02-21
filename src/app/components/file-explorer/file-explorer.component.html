@@ -1,10 +1,78 @@
 <main class="h-full">
 
   @if (!isOnDrugOverCalled) {
-    <div class="bg-black/[.1] dark:bg-white/[.1] h-full">
-      <div
-        class="grid grid-cols-3 p-2 border-b border-splitter-light dark:border-splitter-dark bg-black/[.2] dark:bg-white/[.2]">
-        <div class="col-start-1 col-end-3">
+    <!--<div class="bg-black/[.1] dark:bg-white/[.1] h-full items-center">
+      &lt;!&ndash;Top bar&ndash;&gt;
+      <section
+        class="flex p-2 border-b border-splitter-dark dark:border-splitter-light bg-background-light/[.5] dark:bg-background-dark/[.5] items-center">
+
+        &lt;!&ndash;Navigation button&ndash;&gt;
+        <section>
+          <ul class="flex pl-2">
+            <button class="flex p-2 hover:bg-background-dark/[.1] dark:hover:bg-background-light/[.1] rounded">
+              <svg class="h-6 w-6 text-text-light dark:text-text-dark" width="24" height="24" viewBox="0 0 24 24"
+                   stroke-width="2"
+                   stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z"/>
+                <line x1="5" y1="12" x2="19" y2="12"/>
+                <line x1="5" y1="12" x2="11" y2="18"/>
+                <line x1="5" y1="12" x2="11" y2="6"/>
+              </svg>
+            </button>
+            <button class="flex p-2 hover:bg-background-dark/[.1] dark:hover:bg-background-light/[.1] rounded">
+              <svg class="h-6 w-6 text-text-light dark:text-text-dark" width="24" height="24" viewBox="0 0 24 24"
+                   stroke-width="2"
+                   stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z"/>
+                <line x1="5" y1="12" x2="19" y2="12"/>
+                <line x1="13" y1="18" x2="19" y2="12"/>
+                <line x1="13" y1="6" x2="19" y2="12"/>
+              </svg>
+            </button>
+            <button class="flex p-2 hover:bg-background-dark/[.1] dark:hover:bg-background-light/[.1] rounded">
+              <svg class="h-6 w-6 text-text-light dark:text-text-dark" width="24" height="24" viewBox="0 0 24 24"
+                   stroke-width="2"
+                   stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z"/>
+                <line x1="12" y1="5" x2="12" y2="19"/>
+                <line x1="18" y1="11" x2="12" y2="5"/>
+                <line x1="6" y1="11" x2="12" y2="5"/>
+              </svg>
+            </button>
+            <button class="flex p-2 hover:bg-background-dark/[.1] dark:hover:bg-background-light/[.1] rounded">
+              <svg class="h-6 w-6 text-text-light dark:text-text-dark" fill="none" viewBox="0 0 24 24"
+                   stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+              </svg>
+
+            </button>
+          </ul>
+
+        </section>
+        &lt;!&ndash;Navigations path&ndash;&gt;
+        <section class="">
+          asd
+        </section>
+        &lt;!&ndash;search&ndash;&gt;
+        <section class="">
+          <label for="default-search"
+                 class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
+          <div class="relative">
+            <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+              <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true"
+                   xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+              </svg>
+            </div>
+            <input type="search" id="default-search"
+                   class="block w-full h-6 p-4 ps-10 text-sm rounded-md border outline-none"
+                   placeholder="Search files" required/>
+          </div>
+        </section>
+
+        &lt;!&ndash;<div class="col-start-1 col-end-3">
           q
         </div>
         <div class="col-end-4">
@@ -22,13 +90,142 @@
                    class="block w-full h-6 p-4 ps-10 text-sm rounded-md border outline-none"
                    placeholder="Search files" required/>
           </div>
+        </div>&ndash;&gt;
+
+
+      </section>
+
+    </div>-->
+
+
+    <div>
+      <!--Navigation bar-->
+      <section class="flex items-center justify-between w-full p-2
+      bg-neutral-500 dark:bg-neutral-700">
+
+        <div class="flex px-1">
+          <button class="flex p-2 hover:bg-background-dark/[.1] dark:hover:bg-background-light/[.1]
+        border border-transparent hover:border-primary-light dark:hover:border-primary-dark rounded"
+                  data-tooltip-target="tooltip-back">
+            <svg class="h-6 w-6 text-text-light dark:text-text-dark" width="24" height="24" viewBox="0 0 24 24"
+                 stroke-width="2"
+                 stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <path stroke="none" d="M0 0h24v24H0z"/>
+              <line x1="5" y1="12" x2="19" y2="12"/>
+              <line x1="5" y1="12" x2="11" y2="18"/>
+              <line x1="5" y1="12" x2="11" y2="6"/>
+            </svg>
+          </button>
+          <div
+            class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700"
+            id="tooltip-back"
+            role="tooltip">
+            Back
+            <div class="tooltip-arrow" data-popper-arrow></div>
+          </div>
+          <button class="flex p-2 hover:bg-background-dark/[.1] dark:hover:bg-background-light/[.1]
+        border border-transparent hover:border-primary-light dark:hover:border-primary-dark rounded"
+                  data-tooltip-target="tooltip-forward">
+            <svg class="h-6 w-6 text-text-light dark:text-text-dark" width="24" height="24" viewBox="0 0 24 24"
+                 stroke-width="2"
+                 stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <path stroke="none" d="M0 0h24v24H0z"/>
+              <line x1="5" y1="12" x2="19" y2="12"/>
+              <line x1="13" y1="18" x2="19" y2="12"/>
+              <line x1="13" y1="6" x2="19" y2="12"/>
+            </svg>
+          </button>
+          <div
+            class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700"
+            id="tooltip-forward"
+            role="tooltip">
+            Forward
+            <div class="tooltip-arrow" data-popper-arrow></div>
+          </div>
+          <button *ngIf="!isMobile" class="flex p-2 hover:bg-background-dark/[.1] dark:hover:bg-background-light/[.1]
+        border border-transparent hover:border-primary-light dark:hover:border-primary-dark rounded"
+                  data-tooltip-target="tooltip-refresh"
+                  (click)="getBotMessages()">
+            <svg class="h-6 w-6 text-text-light dark:text-text-dark" fill="none" viewBox="0 0 24 24"
+                 stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+            </svg>
+
+          </button>
+          <div
+            class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700"
+            id="tooltip-refresh"
+            role="tooltip">
+            Refresh
+            <div class="tooltip-arrow" data-popper-arrow></div>
+          </div>
         </div>
-      </div>
+
+        <div class="px-1 w-full" *ngIf="!isMobile">
+          <p-breadcrumb [home]="home" [model]="navigationItems"
+                        styleClass="w-full bg-background-dark/[.1] dark:bg-background-light/[.1] rounded cursor-pointer"></p-breadcrumb>
+        </div>
+
+        <div class="px-1">
+          <label for="default-search"
+                 class="mb-2 text-sm font-medium text-black sr-only dark:text-white">Search</label>
+          <div class="relative">
+            <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+              <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true"
+                   xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+              </svg>
+            </div>
+            <input type="search" id="default-search"
+                   class="block w-full h-full p-4 ps-10 text-sm rounded-md border outline-none
+                 bg-background-dark/[.1] dark:bg-background-light/[.1] focus:border-primary-light dark:focus:border-primary-dark"
+                   placeholder="Search files" [(ngModel)]="searchQuery"/>
+          </div>
+        </div>
+      </section>
+
+      <!--Shortcut buttons bar-->
+      <section class="flex p-2 border-b border-splitter-dark dark:border-splitter-light
+      bg-background-light/[.7] dark:bg-background-dark/[.7]">
+        <div class="flex px-1 items-center">
+          <button class="flex p-2 hover:bg-background-dark/[.1] dark:hover:bg-background-light/[.1]
+        border border-transparent hover:border-primary-light dark:hover:border-primary-dark rounded"
+                  data-tooltip-target="shortcut-new-folder">
+            <svg class="h-6 w-6 text-text-light dark:text-text-dark" fill="none" viewBox="0 0 24 24"
+                 stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+            </svg>
+          </button>
+          <div
+            class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700"
+            id="shortcut-new-folder"
+            role="tooltip">
+            Create new folder in the current location
+            <div class="tooltip-arrow" data-popper-arrow></div>
+          </div>
+        </div>
+      </section>
     </div>
+
+    <!--files-->
+    <section class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 p-2">
+      @for (file of displayedFiles(); track file.name) {
+        <div class="flex flex-col items-center justify-center p-4 bg-white/[.3] dark:bg-black/[.3] rounded" pDraggable>
+          <img *ngIf="file.src && file.src.startsWith('data:image'); else noImage" [src]="file.src"
+               class="w-12 h-12 rounded" alt="{{file.name}}">
+          <p class="text-text-light dark:text-text-dark break-all select-none">{{ file.name }}</p>
+          <p class="text-text-light dark:text-text-dark select-none">{{ file.size }}</p>
+        </div>
+      }
+    </section>
 
   } @else {
     <div class="w-full h-full bg-white/[.1]" (drop)="onDrag($event)">
-      <div class="grid grid-cols-1 gap-4 py-4 px-4 bg-white/[.3]">
+
+      <section class="grid grid-cols-1 gap-4 py-4 px-4 bg-white/[.3]">
         <div class="flex">
           <button type="button" class="flex items-center mr-4 bg-blue-500 rounded p-2 hover:bg-blue-700"
                   (click)="openFileInput()">
@@ -62,7 +259,7 @@
           </button>
         </div>
 
-      </div>
+      </section>
 
       <!--File upload-->
       <div class="file-display px-2 pt-2">
@@ -103,17 +300,16 @@
         }
       </div>
     </div>
-
-    <ng-template #noImage>
-      <svg class="h-12 w-12 text-text-light dark:text-text-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-           stroke-width="2"
-           stroke-linecap="round" stroke-linejoin="round">
-        <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/>
-        <polyline points="13 2 13 9 20 9"/>
-      </svg>
-    </ng-template>
-
   }
+
+  <ng-template #noImage>
+    <svg class="h-12 w-12 text-text-light dark:text-text-dark" fill="none" stroke="currentColor" stroke-linecap="round"
+         stroke-linejoin="round"
+         stroke-width="2" viewBox="0 0 24 24">
+      <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/>
+      <polyline points="13 2 13 9 20 9"/>
+    </svg>
+  </ng-template>
 
   <input (change)="onDrag($event)" class="hidden" id="fileInput" multiple name="fileInput"
          type="file">

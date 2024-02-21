@@ -5,13 +5,34 @@
               data-dropdown-trigger="hover"
               id="user">
         <img [src]="userProfilePhoto" alt="user_logo" class="img-fluid h-12">
+
       </button>
     </li>
     <li (click)="openUpload()" class="inline-flex flex-col items-center justify-center">
-      <i class="pi pi-plus-circle" style="font-size: 2rem"></i>
+      <button data-tooltip-target="tooltip-new">
+        <i class="pi pi-plus-circle" style="font-size: 2rem"></i>
+        <span class="sr-only">New item</span>
+      </button>
+      <div
+        class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700"
+        id="tooltip-new"
+        role="tooltip">
+        Create new item
+        <div class="tooltip-arrow" data-popper-arrow></div>
+      </div>
     </li>
     <li class="inline-flex flex-col items-center justify-center ">
-      <i class="pi pi-star" style="font-size: 2rem"></i>
+      <button data-tooltip-target="tooltip-favorite">
+        <i class="pi pi-star" style="font-size: 2rem"></i>
+        <span class="sr-only">Settings</span>
+      </button>
+      <div
+        class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700"
+        id="tooltip-favorite"
+        role="tooltip">
+        Favorite
+        <div class="tooltip-arrow" data-popper-arrow></div>
+      </div>
     </li>
   </ul>
 </div>

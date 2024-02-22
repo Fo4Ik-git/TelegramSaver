@@ -352,18 +352,7 @@ export class FileExplorerComponent implements OnInit {
   }
 
   toggleFileSelection(file: any) {
-    if (this.multiSelectMode) {
-      if (this.firstSelectedFile === null) {
-        this.firstSelectedFile = file;
-        this.selectedFiles.push(file);
-      } else {
-        const firstIndex = this.displayedFiles().indexOf(this.firstSelectedFile);
-        const lastIndex = this.displayedFiles().indexOf(file);
-        const startIndex = Math.min(firstIndex, lastIndex);
-        const endIndex = Math.max(firstIndex, lastIndex);
-        this.selectedFiles = this.displayedFiles().slice(startIndex, endIndex + 1);
-      }
-    } else if (this.ctrlPressed) {
+    if (this.ctrlPressed) {
       const index = this.selectedFiles.indexOf(file);
       if (index > -1) {
         this.selectedFiles.splice(index, 1);
@@ -371,12 +360,21 @@ export class FileExplorerComponent implements OnInit {
         this.selectedFiles.push(file);
       }
     } else {
-      if (this.selectedFiles.includes(file)) {
-        this.selectedFiles = [];
+      if (this.firstSelectedFile !== null && this.multiSelectMode) {
+        const firstIndex = this.displayedFiles().indexOf(this.firstSelectedFile);
+        const lastIndex = this.displayedFiles().indexOf(file);
+        const startIndex = Math.min(firstIndex, lastIndex);
+        const endIndex = Math.max(firstIndex, lastIndex);
+        this.selectedFiles = this.displayedFiles().slice(startIndex, endIndex + 1);
       } else {
-        this.selectedFiles = [file];
+        if (this.selectedFiles.includes(file)) {
+          this.selectedFiles = [];
+          this.firstSelectedFile = null;
+        } else {
+          this.selectedFiles = [file];
+          this.firstSelectedFile = file;
+        }
       }
-      this.firstSelectedFile = null;
     }
   }
 

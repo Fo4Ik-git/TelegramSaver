@@ -10,6 +10,8 @@
   --splitter: theme('colors.splitter.light');
   --primary: theme('colors.primary.light');
 
+  --ngx-json-key: theme('colors.primary.light');
+
   --font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Apple Color Emoji", "Segoe UI", Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
   --font-family-monospace: "Cascadia Mono", "Roboto Mono", "Droid Sans Mono", "SF Mono", "Menlo", "Ubuntu Mono", "Consolas", monospace;
 }
@@ -21,6 +23,8 @@
   --background-image: theme('backgroundImage.dark');
   --splitter: theme('colors.splitter.dark');
   --primary: theme('colors.primary.dark');
+
+  --ngx-json-key: theme('colors.primary.dark');
 
   --font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Apple Color Emoji", "Segoe UI", Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
   --font-family-monospace: "Cascadia Mono", "Roboto Mono", "Droid Sans Mono", "SF Mono", "Menlo", "Ubuntu Mono", "Consolas", monospace;

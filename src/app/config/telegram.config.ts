@@ -10,6 +10,7 @@ export let userConfig = {
   },
   user: {
     lang_code: 'en',
+    isAdmin: false
   }
 }
 
@@ -19,18 +20,8 @@ export let clickItems = [
     icon: 'pi pi-fw pi-file',
     items: [
       {
-        label: 'New',
+        label: 'Create new Folder',
         icon: 'pi pi-fw pi-plus',
-        items: [
-          {
-            label: 'Bookmark',
-            icon: 'pi pi-fw pi-bookmark'
-          },
-          {
-            label: 'Video',
-            icon: 'pi pi-fw pi-video'
-          }
-        ]
       },
       {
         label: 'Delete',

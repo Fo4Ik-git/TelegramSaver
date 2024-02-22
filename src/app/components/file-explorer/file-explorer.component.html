@@ -109,6 +109,32 @@
             Create new folder in the current location
             <div class="tooltip-arrow" data-popper-arrow></div>
           </div>
+
+          <!--TODO ADMIN-->
+          <button class="flex p-2 hover:bg-background-dark/[.1] dark:hover:bg-background-light/[.1]
+        border border-transparent hover:border-primary-light dark:hover:border-primary-dark rounded"
+                  data-tooltip-target="shortcut-admin-panel" (click)="showAdminPanel()" *ngIf="userConfig.user.isAdmin">
+            <svg class="h-6 w-6 text-text-light dark:text-text-dark" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round">
+              <line x1="4" y1="21" x2="4" y2="14"/>
+              <line x1="4" y1="10" x2="4" y2="3"/>
+              <line x1="12" y1="21" x2="12" y2="12"/>
+              <line x1="12" y1="8" x2="12" y2="3"/>
+              <line x1="20" y1="21" x2="20" y2="16"/>
+              <line x1="20" y1="12" x2="20" y2="3"/>
+              <line x1="1" y1="14" x2="7" y2="14"/>
+              <line x1="9" y1="8" x2="15" y2="8"/>
+              <line x1="17" y1="16" x2="23" y2="16"/>
+            </svg>
+          </button>
+          <div
+            class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700"
+            id="shortcut-admin-panel"
+            role="tooltip">
+            Admin panel
+            <div class="tooltip-arrow" data-popper-arrow></div>
+          </div>
         </div>
       </section>
     </div>
@@ -119,9 +145,8 @@
         <div
           class="folder flex flex-col items-center justify-center p-4 bg-white/[.3] dark:bg-black/[.3] rounded border border-transparent"
           [ngClass]="{'selected': isFileSelected(folder)}" (click)="toggleFileSelection(folder)"
-          (onDrop)="fileDropToFolder()" pDroppable>
-          <img *ngIf="folder.src && folder.src.startsWith('data:image'); else folderImage" [src]="folder.src"
-               class="w-12 h-12 rounded" alt="{{folder.name}}">
+          (onDrop)="fileDropToFolder(folder)" pDroppable>
+          <ng-container *ngTemplateOutlet="folderImage"></ng-container>
           <input *ngIf="folder.isEditing" [(ngModel)]="folder.name" (blur)="finishEditing(folder)"
                  class="text-text-light dark:text-text-dark break-all select-none w-full" autofocus>
           <p *ngIf="!folder.isEditing"
@@ -243,4 +268,31 @@
          type="file">
   <p-toast [breakpoints]="{'920px': {width: '100%', right: '0', left: '0'}}" [life]="2000"></p-toast>
   <p-contextMenu [global]="true" [model]="items"></p-contextMenu>
+
+  <!--TODO ADMIN DELETE--><!--[modal]="true"-->
+  <p-dialog [(visible)]="displayDialog" [resizable]="true" [style]="{ width: '100vw', height:'100vh', padding: '1rem' }"
+            header="Admin panel">
+    <!--<form>
+      <label for="filter">Filter:</label>
+      <select id="filter" [(ngModel)]="selectedFilter" name="filter">
+        <option value="all">All</option>
+        <option value="files">Files</option>
+        <option value="folders">Folders</option>
+        <option value="none">None</option>
+      </select>
+
+      <label for="folder">Folder:</label>
+      <input id="folder" [(ngModel)]="selectedFolder" name="folder" type="text">
+
+      &lt;!&ndash;<button (click)="showAdmin(selectedFilter, selectedFolder)">Show</button>&ndash;&gt;
+    </form>-->
+
+    <app-admin-panel
+      [files]="telegramFiles"
+      [folders]="this.folders"
+    ></app-admin-panel>
+
+
+  </p-dialog>
+
 </main>

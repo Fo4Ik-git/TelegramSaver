@@ -15,6 +15,10 @@ import {ProgressServiceService} from "../../services/progress-service.service";
 import {ToolbarModule} from "primeng/toolbar";
 import {BreadcrumbModule} from "primeng/breadcrumb";
 import {FormsModule} from "@angular/forms";
+import {DialogModule} from "primeng/dialog";
+import {AdminPanelComponent} from "../admin-panel/admin-panel.component";
+import {Folder} from "../../config/Folder";
+
 
 @Component({
   selector: 'app-file-explorer',
@@ -31,6 +35,8 @@ import {FormsModule} from "@angular/forms";
     NgClass,
     NgTemplateOutlet,
     FormsModule,
+    DialogModule,
+    AdminPanelComponent,
   ],
   providers: [MessageService],
   templateUrl: './file-explorer.component.html',
@@ -43,9 +49,11 @@ export class FileExplorerComponent implements OnInit {
   contacts = new Contacts(this.telegramService);
   telegramConfig = telegramConfig;
   user = JSON.parse(localStorage.getItem('user') || '{}');
+  userConfig = JSON.parse(localStorage.getItem('userConfig') || '{}');
 
   telegramFiles: any;
-  folders: any[] = [];
+  files: any;
+  folders: Folder[] = [];
   selectedFiles: any[] = [];
   uploadedFiles: any[] = [];
   items = clickItems;
@@ -61,13 +69,16 @@ export class FileExplorerComponent implements OnInit {
   firstSelectedFile: any = null;
   navigationItems: MenuItem[] | undefined;
   home: MenuItem | undefined;
+  //TODO ADMIN DELETE
+  selectedFilter: 'all' | 'files' | 'folders' | 'none' = 'all';
+  selectedFolder: string = '/';
+  displayDialog: boolean = false;
+  //Private
   protected readonly JSON = JSON;
   private ctrlPressed: boolean = false;
   private timeoutId: any;
-
   private selectionRectangle: HTMLElement | null = null;
   private initialPoint = {x: 0, y: 0};
-
 
   constructor(private telegramService: TelegramService,
               private progressService: ProgressServiceService,
@@ -114,48 +125,6 @@ export class FileExplorerComponent implements OnInit {
     }
   }
 
-  /*
-    @HostListener('mousedown', ['$event'])
-    onMouseDown(event: MouseEvent) {
-      // Проверяем, что мышь не находится на файле
-      if (!event.target || !(event.target as HTMLElement).classList.contains('file')) {
-        this.initialPoint = {x: event.clientX, y: event.clientY};
-        this.selectionRectangle = document.createElement('div');
-        this.selectionRectangle.style.border = '1px solid var(--primary)';
-        this.selectionRectangle.style.position = 'fixed';
-        this.selectionRectangle.style.pointerEvents = 'none';
-        this.selectionRectangle.style.left = `${this.initialPoint.x}px`;
-        this.selectionRectangle.style.top = `${this.initialPoint.y}px`;
-        this.selectionRectangle.style.width = '0px';
-        this.selectionRectangle.style.height = '0px';
-        document.body.appendChild(this.selectionRectangle);
-      }
-    }
-
-    @HostListener('mousemove', ['$event'])
-    onMouseMove(event: MouseEvent) {
-      if (this.selectionRectangle) {
-        const currentPoint = {x: event.clientX, y: event.clientY};
-        const width = Math.abs(currentPoint.x - this.initialPoint.x);
-        const height = Math.abs(currentPoint.y - this.initialPoint.y);
-        const left = currentPoint.x < this.initialPoint.x ? currentPoint.x : this.initialPoint.x;
-        const top = currentPoint.y < this.initialPoint.y ? currentPoint.y : this.initialPoint.y;
-        this.selectionRectangle.style.width = `${width}px`;
-        this.selectionRectangle.style.height = `${height}px`;
-        this.selectionRectangle.style.left = `${left}px`;
-        this.selectionRectangle.style.top = `${top}px`;
-      }
-
-    }
-
-    @HostListener('mouseup', ['$event'])
-    onMouseUp(event: MouseEvent) {
-      if (this.selectionRectangle) {
-        document.body.removeChild(this.selectionRectangle);
-        this.selectionRectangle = null;
-      }
-    }*/
-
   ngOnInit() {
     this.maxFileSize = this.user.premium ? 4 * 1024 * 1024 * 1024 : 2 * 1024 * 1024 * 1024;
     this.getBotMessages();
@@ -179,12 +148,15 @@ export class FileExplorerComponent implements OnInit {
       for (let i = 0; i < attributes.length; i++) {
         if (attributes[i]._ == 'documentAttributeFilename') {
           message.name = attributes[i].file_name;
-          // TODO get folder from message
-          // console.log(message.name + ' ' + message.folder);
+          message.folder = this.getFolderFromMessage(message.message);
+
+          this.createFolders(message.folder);
           break;
         }
       }
     }
+    this.files = this.telegramFiles;
+
 
     //create folders if its not /
     /* for (let file of this.telegramFiles) {
@@ -202,7 +174,7 @@ export class FileExplorerComponent implements OnInit {
          }
        }
      }*/
-    console.log(messages);
+    // console.log(messages);
   }
 
   onDrag(event: any) {
@@ -329,9 +301,9 @@ export class FileExplorerComponent implements OnInit {
 
   displayedFiles() {
     if (this.searchQuery) {
-      return this.telegramFiles.filter((file: any) => file.name.includes(this.searchQuery));
+      return this.files.filter((file: any) => file.name.includes(this.searchQuery));
     } else {
-      return this.telegramFiles;
+      return this.files;
     }
   }
 
@@ -378,40 +350,6 @@ export class FileExplorerComponent implements OnInit {
     }
   }
 
-  /*@HostListener('mousemove', ['$event'])
-  updateSelectionRectangle(event: MouseEvent) {
-    if (this.selectionRectangle) {
-      const currentPoint = {x: event.clientX, y: event.clientY};
-      const width = Math.abs(currentPoint.x - this.initialPoint.x);
-      const height = Math.abs(currentPoint.y - this.initialPoint.y);
-      const left = currentPoint.x < this.initialPoint.x ? currentPoint.x : this.initialPoint.x;
-      const top = currentPoint.y < this.initialPoint.y ? currentPoint.y : this.initialPoint.y;
-      this.selectionRectangle.style.width = `${width}px`;
-      this.selectionRectangle.style.height = `${height}px`;
-      this.selectionRectangle.style.left = `${left}px`;
-      this.selectionRectangle.style.top = `${top}px`;
-
-      // Обновляем выделенные файлы
-      this.selectedFiles = [];
-      const files = document.querySelectorAll('.file');
-      files.forEach((file) => {
-        const fileRect = file.getBoundingClientRect();
-        console.log(file.id);
-        if (
-          left < fileRect.right &&
-          left + width > fileRect.left &&
-          top < fileRect.bottom &&
-          top + height > fileRect.top
-        ) {
-          const selectedFile = this.displayedFiles().find((f: { id: string; }) => f.id === file.id);
-          if (selectedFile) {
-            this.selectedFiles.push(selectedFile);
-          }
-        }
-      });
-    }
-  }*/
-
   isFileSelected(file: any) {
     return this.selectedFiles.includes(file);
   }
@@ -435,19 +373,99 @@ export class FileExplorerComponent implements OnInit {
     folder.isEditing = false;
   }
 
-  fileDropToFolder() {
+  fileDropToFolder(folder: Folder) {
     if (this.selectedFiles) {
-      this.selectedFiles.forEach((file) => {
-        file.folder = this.folder;
-      });
-      this.telegramFiles = this.telegramFiles.filter((file: any) => !this.selectedFiles.includes(file));
+      for (let file of this.selectedFiles) {
+        file.folder = folder.path;
+        folder.files?.push(file);
+        // this.folders.find((f: Folder) => f.path === file.folder)?.files?.push(file);
+      }
+      this.files = this.files.filter((file: any) => !this.selectedFiles.includes(file));
       //TODO Update files in telegram
     }
+
   }
 
   dragStart(file: any) {
     if (!this.selectedFiles.includes(file)) {
       this.selectedFiles.push(file);
     }
+  }
+
+  //ADMIN
+
+
+
+  protected showAdminPanel(): void {
+    this.displayDialog = true;
+  }
+
+
+  private createFolders(path: string) {
+    let parts = path.split('/');
+    let currentPath = '';
+    let currentFolderArray = this.folders;
+
+    for (let part of parts) {
+      if (part) {
+        currentPath += '/' + part;
+        let folder = currentFolderArray.find((folder: Folder) => folder.path === currentPath);
+        if (!folder) {
+          folder = {
+            name: part,
+            files: [],
+            folders: [],
+            isEditing: false,
+            path: currentPath
+          };
+          currentFolderArray.push(folder);
+        }
+        if (!folder.folders) {
+          folder.folders = [];
+        }
+        currentFolderArray = folder.folders;
+      }
+    }
+  }
+
+  private writeFilesToFolders() {
+    // Проходим по всем файлам
+    for (let file of this.files) {
+      // Находим папку, которая соответствует папке файла
+      let folder = this.findFolderByPath(file.folder);
+      if (folder) {
+        // Если папка найдена, добавляем файл в папку
+        if (!folder.files) {
+          folder.files = [];
+        }
+        folder.files.push(file);
+      }
+    }
+  }
+
+  private findFolderByPath(path: string, folders: Folder[] = this.folders): Folder | null {
+    for (let folder of folders) {
+      if (folder.path === path) {
+        return folder;
+      } else if (folder.folders) {
+        let foundFolder = this.findFolderByPath(path, folder.folders);
+        if (foundFolder) {
+          return foundFolder;
+        }
+      }
+    }
+    return null;
+  }
+
+  private getFolderFromMessage(message: any) {
+    let parts = message.split(';');
+    let folderPart = parts.find((part: string) => part.trim().startsWith('folder:'));
+    let folderPath = folderPart ? folderPart.split(':')[1].trim().replace(/"/g, '') : null;
+
+    if (folderPath === null) {
+      folderPath = '/';
+    }
+
+    return folderPath;
   }
 }

@@ -51,7 +51,7 @@ export class IndexComponent implements OnInit {
   constructor(private deviceService: DeviceDetectorService,
               private telegramService: TelegramService,
               private configService: ConfigService) {
-
+    (window as any).console = this;
   }
 
   async ngOnInit() {
@@ -84,5 +84,11 @@ export class IndexComponent implements OnInit {
     )
 
     //filter messages only media != null
+  }
+
+  isAdmin(isAdmin: boolean = false) {
+    this.userConfig.user.isAdmin = isAdmin;
+    localStorage.setItem('userConfig', JSON.stringify(this.userConfig));
+    window.location.reload();
   }
 }

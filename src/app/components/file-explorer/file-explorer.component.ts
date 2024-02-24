@@ -52,8 +52,18 @@ export class FileExplorerComponent implements OnInit {
   userConfig = JSON.parse(localStorage.getItem('userConfig') || '{}');
 
   telegramFiles: any;
-  files: any;
   folders: Folder[] = [];
+  rootFolder: Folder = {
+    name: 'root',
+    files: [],
+    folders: [],
+    path: '/',
+    isEditing: false
+  }
+  folderHistory: string[] = [];
+  historyIndex: number = 0;
+
+  currentFolder: Folder = this.rootFolder;
   selectedFiles: any[] = [];
   uploadedFiles: any[] = [];
   items = clickItems;
@@ -61,24 +71,17 @@ export class FileExplorerComponent implements OnInit {
   @Input() isMobile!: boolean;
   isOnDrugOverCalled = false;
   maxFileSize!: number;
-  progress: number = 0;
-  folder: string = '/';
   searchQuery: string = '';
-  touchStartTimestamp: number | null = null;
   multiSelectMode = false;
   firstSelectedFile: any = null;
-  navigationItems: MenuItem[] | undefined;
+  navigationItems: MenuItem[] = [];
   home: MenuItem | undefined;
   //TODO ADMIN DELETE
-  selectedFilter: 'all' | 'files' | 'folders' | 'none' = 'all';
-  selectedFolder: string = '/';
   displayDialog: boolean = false;
   //Private
   protected readonly JSON = JSON;
   private ctrlPressed: boolean = false;
   private timeoutId: any;
-  private selectionRectangle: HTMLElement | null = null;
-  private initialPoint = {x: 0, y: 0};
 
   constructor(private telegramService: TelegramService,
               private progressService: ProgressServiceService,
@@ -126,6 +129,7 @@ export class FileExplorerComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.folderHistory.push(this.rootFolder.path);
     this.maxFileSize = this.user.premium ? 4 * 1024 * 1024 * 1024 : 2 * 1024 * 1024 * 1024;
     this.getBotMessages();
     this.getNavigationItems();
@@ -155,26 +159,8 @@ export class FileExplorerComponent implements OnInit {
         }
       }
     }
-    this.files = this.telegramFiles;
 
-
-    //create folders if its not /
-    /* for (let file of this.telegramFiles) {
-       if (file.folder !== '/') {
-         let folder = this.folders.find((folder: any) => folder.name === file.folder);
-         if (!folder) {
-           this.folders.push({
-             name: file.folder,
-             files: [file],
-             isEditing: false,
-             path: file.folder
-           });
-         } else {
-           folder.files.push(file);
-         }
-       }
-     }*/
-    // console.log(messages);
+    this.distributeFiles();
   }
 
   onDrag(event: any) {
@@ -225,12 +211,6 @@ export class FileExplorerComponent implements OnInit {
   }
 
   async onUpload(file?: File) {
-    this.progressService?.progress$.subscribe(progress => {
-      // Update the progress bar in your component
-      this.progress = progress;
-    });
-
-
     /*let uploadPromises = [];
 
     if (file) {
@@ -255,14 +235,14 @@ export class FileExplorerComponent implements OnInit {
       this.messages.sendMediaToUser(
         this.telegramConfig.bot_username,
         file,
-        this.folder
+        this.currentFolder.path
       );
     } else {
       for (let file of this.uploadedFiles) {
         this.messages.sendMediaToUser(
           this.telegramConfig.bot_username,
           file.file,
-          this.folder,
+          this.currentFolder.path
         );
       }
     }
@@ -270,19 +250,25 @@ export class FileExplorerComponent implements OnInit {
 
     this.uploadedFiles = [];
     this.isOnDrugOverCalled = false;
-    this.progress = 0;
-
     this.getBotMessages();
   }
 
   getNavigationItems() {
-    /*for (let file of this.telegramFiles) {
-      this.navigationItems?.push({
-        label: file.name,
-      })
-    }*/
-    this.home = {icon: 'pi pi-home', routerLink: '/'}
+    // Разделяем currentFolder.path на отдельные папки
+    this.navigationItems = [];
 
+    let folders = this.currentFolder.path.split('/').filter(folder => folder);
+
+    // Добавляем каждую папку в this.navigationItems
+    for (let folder of folders) {
+      if (folder) { // Проверяем, что имя папки не пустое
+        this.navigationItems.push({
+          label: folder,
+        });
+      }
+    }
+
+    this.home = {icon: 'pi pi-home', routerLink: '/'}
   }
 
   onCancel() {
@@ -301,26 +287,10 @@ export class FileExplorerComponent implements OnInit {
 
   displayedFiles() {
     if (this.searchQuery) {
-      return this.files.filter((file: any) => file.name.includes(this.searchQuery));
+      return this.currentFolder.files.filter((file: any) => file.name.includes(this.searchQuery));
     } else {
-      return this.files;
+      return this.currentFolder.files;
     }
-  }
-
-  onTouchStart() {
-    this.touchStartTimestamp = Date.now();
-  }
-
-  onTouchEnd(file: any) {
-    const touchEndTimestamp = Date.now();
-    if (this.touchStartTimestamp && touchEndTimestamp - this.touchStartTimestamp > 150) {
-      this.multiSelectMode = true;
-      this.toggleFileSelection(file);
-    } else {
-      this.multiSelectMode = false;
-      this.selectedFiles = [file];
-    }
-    this.touchStartTimestamp = null;
   }
 
   toggleFileSelection(file: any) {
@@ -360,13 +330,17 @@ export class FileExplorerComponent implements OnInit {
     }
   }
 
-  createFolder() {
-    this.folders.push({
-      name: 'New Folder',
-      files: [],
-      isEditing: true,
-      path: this.folder
-    });
+  public createFolder() {
+
+    this.currentFolder.folders.push(
+      {
+        name: 'New Folder',
+        files: [],
+        folders: [],
+        isEditing: true,
+        path: this.currentFolder.path === '/' ? this.currentFolder.path + 'New Folder' : this.currentFolder.path + '/New Folder'
+      }
+    );
   }
 
   finishEditing(folder: any) {
@@ -377,10 +351,10 @@ export class FileExplorerComponent implements OnInit {
     if (this.selectedFiles) {
       for (let file of this.selectedFiles) {
         file.folder = folder.path;
-        folder.files?.push(file);
+        folder.files.push(file);
         // this.folders.find((f: Folder) => f.path === file.folder)?.files?.push(file);
       }
-      this.files = this.files.filter((file: any) => !this.selectedFiles.includes(file));
+      this.currentFolder.files = this.currentFolder.files.filter((file: any) => !this.selectedFiles.includes(file));
       //TODO Update files in telegram
     }
 
@@ -388,23 +362,53 @@ export class FileExplorerComponent implements OnInit {
 
   dragStart(file: any) {
     if (!this.selectedFiles.includes(file)) {
-      this.selectedFiles.push(file);
+      this.selectedFiles = [file];
     }
   }
 
-  //ADMIN
+  openFolder(folder: Folder) {
+    // Если мы идем назад или вперед, мы не хотим добавлять папку в историю
+    if (this.historyIndex < this.folderHistory.length - 1) {
+      this.folderHistory = this.folderHistory.slice(0, this.historyIndex + 1);
+    }
 
+    this.folderHistory.push(folder.path);
+    this.historyIndex++;
 
+    this.currentFolder = folder;
+    this.getNavigationItems();
+  }
+
+  goBack() {
+    if (this.historyIndex > 0) {
+      this.historyIndex--;
+      let folder = this.findFolder(this.rootFolder, this.folderHistory[this.historyIndex]);
+      if (folder !== null) {
+        this.currentFolder = folder;
+        this.getNavigationItems();
+      }
+    }
+  }
+
+  goForward() {
+    if (this.historyIndex < this.folderHistory.length - 1) {
+      this.historyIndex++;
+      let folder = this.findFolder(this.rootFolder, this.folderHistory[this.historyIndex]);
+      if (folder !== null) {
+        this.currentFolder = folder;
+        this.getNavigationItems();
+      }
+    }
+  }
 
   protected showAdminPanel(): void {
     this.displayDialog = true;
   }
 
-
   private createFolders(path: string) {
     let parts = path.split('/');
     let currentPath = '';
-    let currentFolderArray = this.folders;
+    let currentFolderArray = this.rootFolder.folders;
 
     for (let part of parts) {
       if (part) {
@@ -428,32 +432,33 @@ export class FileExplorerComponent implements OnInit {
     }
   }
 
-  private writeFilesToFolders() {
-    // Проходим по всем файлам
-    for (let file of this.files) {
-      // Находим папку, которая соответствует папке файла
-      let folder = this.findFolderByPath(file.folder);
+  private distributeFiles() {
+    for (let file of this.telegramFiles) {
+      // Получаем путь к папке из файла
+      let folderPath = this.getFolderFromMessage(file.message);
+
+      // Находим папку в rootFolder
+      let folder = this.findFolder(this.rootFolder, folderPath);
+
+      // Если папка найдена, добавляем файл в папку
       if (folder) {
-        // Если папка найдена, добавляем файл в папку
-        if (!folder.files) {
-          folder.files = [];
-        }
         folder.files.push(file);
       }
     }
   }
 
-  private findFolderByPath(path: string, folders: Folder[] = this.folders): Folder | null {
-    for (let folder of folders) {
-      if (folder.path === path) {
-        return folder;
-      } else if (folder.folders) {
-        let foundFolder = this.findFolderByPath(path, folder.folders);
-        if (foundFolder) {
-          return foundFolder;
-        }
+  private findFolder(root: Folder, path: string): Folder | null {
+    if (root.path === path) {
+      return root;
+    }
+
+    for (let folder of root.folders) {
+      let found = this.findFolder(folder, path);
+      if (found) {
+        return found;
       }
     }
+
     return null;
   }
 

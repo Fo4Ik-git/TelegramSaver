@@ -44,7 +44,7 @@
       </ul>
     </div>
   </aside>
-  <div class="pl-2 w-full">
+  <div class="pl-2 w-[90%]">
     <ng-container
       *ngTemplateOutlet="getTemplate(); context: { $implicit: activeComponent === 'folder' ? selectedFolder : selectedFile }">
     </ng-container>
@@ -118,6 +118,6 @@
 </ng-template>
 
 <ng-template #user>
-<!--  <ngx-json-viewer [expanded]="false" [json]="userConfig" class="max-w-full break-all"></ngx-json-viewer>-->
+  <!--  <ngx-json-viewer [expanded]="false" [json]="userConfig" class="max-w-full break-all"></ngx-json-viewer>-->
   <ngx-json-viewer [expanded]="false" [json]="userData" class="max-w-full break-all"></ngx-json-viewer>
 </ng-template>

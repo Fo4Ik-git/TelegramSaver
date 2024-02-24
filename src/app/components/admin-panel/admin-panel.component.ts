@@ -22,8 +22,7 @@ type ActiveComponentType = 'files' | 'folders' | 'file' | 'folder' | 'user';
   styleUrl: './admin-panel.component.scss'
 })
 export class AdminPanelComponent {
-  @Input() files: any;
-  @Input() folders: any;
+  @Input() rootFolder: any;
 
   @ViewChild('files', {read: TemplateRef, static: true}) filesTemplate!: TemplateRef<any>;
   @ViewChild('folders', {read: TemplateRef, static: true}) foldersTemplate!: TemplateRef<any>;
@@ -35,8 +34,6 @@ export class AdminPanelComponent {
   activeComponent: ActiveComponentType = 'files';
   selectedFile: any;
   selectedFolder: any;
-  file: any;
-  folder: any;
   filesQuery: string = '';
   foldersQuery: string = '';
   userData = JSON.parse(localStorage.getItem('user') || '{}');
@@ -62,21 +59,21 @@ export class AdminPanelComponent {
 
   displayedFiles() {
     if (this.filesQuery) {
-      return this.files.filter((file: any) => file.name.includes(this.filesQuery));
+      return this.rootFolder.files.filter((file: any) => file.name.includes(this.filesQuery));
     } else {
-      return this.files;
+      return this.rootFolder.files;
     }
   }
 
   displayedFolders() {
     if (this.foldersQuery) {
-      return this.folders.filter((folder: any) => folder.name.includes(this.foldersQuery));
+      return this.rootFolder.folders.filter((folder: any) => folder.name.includes(this.foldersQuery));
     } else {
       return this.getAllFolders();
     }
   }
 
-  getAllFolders(folders: Folder[] = this.folders): Folder[] {
+  getAllFolders(folders: Folder[] = this.rootFolder.folders): Folder[] {
     let allFolders: Folder[] = [];
 
     for (let folder of folders) {

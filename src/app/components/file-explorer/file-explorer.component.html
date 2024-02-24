@@ -6,9 +6,11 @@
       <section class="flex items-center justify-between w-full p-2
       bg-neutral-500 dark:bg-neutral-700">
 
+        <!--back button-->
         <div class="flex px-1">
           <button class="flex p-2 hover:bg-background-dark/[.1] dark:hover:bg-background-light/[.1]
         border border-transparent hover:border-primary-light dark:hover:border-primary-dark rounded"
+                  (click)="goBack()"
                   data-tooltip-target="tooltip-back">
             <svg class="h-6 w-6 text-text-light dark:text-text-dark" width="24" height="24" viewBox="0 0 24 24"
                  stroke-width="2"
@@ -26,8 +28,11 @@
             Back
             <div class="tooltip-arrow" data-popper-arrow></div>
           </div>
+
+          <!--forward button-->
           <button class="flex p-2 hover:bg-background-dark/[.1] dark:hover:bg-background-light/[.1]
         border border-transparent hover:border-primary-light dark:hover:border-primary-dark rounded"
+                  (click)="goForward()"
                   data-tooltip-target="tooltip-forward">
             <svg class="h-6 w-6 text-text-light dark:text-text-dark" width="24" height="24" viewBox="0 0 24 24"
                  stroke-width="2"
@@ -45,6 +50,7 @@
             Forward
             <div class="tooltip-arrow" data-popper-arrow></div>
           </div>
+
           <button *ngIf="!isMobile" class="flex p-2 hover:bg-background-dark/[.1] dark:hover:bg-background-light/[.1]
         border border-transparent hover:border-primary-light dark:hover:border-primary-dark rounded"
                   data-tooltip-target="tooltip-refresh"
@@ -141,10 +147,11 @@
 
     <!--files-->
     <section class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 gap-4 p-2">
-      @for (folder of folders; track folder.name) {
+      @for (folder of currentFolder.folders; track folder.name) {
         <div
           class="folder flex flex-col items-center justify-center p-4 bg-white/[.3] dark:bg-black/[.3] rounded border border-transparent"
           [ngClass]="{'selected': isFileSelected(folder)}" (click)="toggleFileSelection(folder)"
+          (dblclick)="openFolder(folder)"
           (onDrop)="fileDropToFolder(folder)" pDroppable>
           <ng-container *ngTemplateOutlet="folderImage"></ng-container>
           <input *ngIf="folder.isEditing" [(ngModel)]="folder.name" (blur)="finishEditing(folder)"
@@ -157,7 +164,7 @@
       @for (file of displayedFiles(); track file.name) {
         <div
           class="file flex flex-col items-center justify-center p-4 bg-white/[.3] dark:bg-black/[.3] rounded border border-transparent"
-          (touchstart)="onTouchStart()" (touchend)="onTouchEnd(file)" pDraggable (onDragStart)="dragStart(file)"
+          pDraggable (onDragStart)="dragStart(file)"
           [ngClass]="{'selected': isFileSelected(file)}" (click)="toggleFileSelection(file)">
           <img *ngIf="file.src && file.src.startsWith('data:image'); else noImage" [src]="file.src"
                class="w-12 h-12 rounded" alt="{{file.name}}">
@@ -266,33 +273,17 @@
 
   <input (change)="onDrag($event)" class="hidden" id="fileInput" multiple name="fileInput"
          type="file">
-  <p-toast [breakpoints]="{'920px': {width: '100%', right: '0', left: '0'}}" [life]="2000"></p-toast>
   <p-contextMenu [global]="true" [model]="items"></p-contextMenu>
 
   <!--TODO ADMIN DELETE--><!--[modal]="true"-->
   <p-dialog [(visible)]="displayDialog" [resizable]="true" [style]="{ width: '100vw', height:'100vh', padding: '1rem' }"
             header="Admin panel">
-    <!--<form>
-      <label for="filter">Filter:</label>
-      <select id="filter" [(ngModel)]="selectedFilter" name="filter">
-        <option value="all">All</option>
-        <option value="files">Files</option>
-        <option value="folders">Folders</option>
-        <option value="none">None</option>
-      </select>
-
-      <label for="folder">Folder:</label>
-      <input id="folder" [(ngModel)]="selectedFolder" name="folder" type="text">
-
-      &lt;!&ndash;<button (click)="showAdmin(selectedFilter, selectedFolder)">Show</button>&ndash;&gt;
-    </form>-->
-
     <app-admin-panel
-      [files]="telegramFiles"
-      [folders]="this.folders"
+      [rootFolder]="rootFolder"
     ></app-admin-panel>
 
 
   </p-dialog>
 
 </main>
+<p-toast [breakpoints]="{'920px': {width: '100%', right: '0', left: '0'}}" [life]="2000"></p-toast>

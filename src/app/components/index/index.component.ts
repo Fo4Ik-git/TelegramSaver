@@ -51,7 +51,7 @@ export class IndexComponent implements OnInit {
   constructor(private deviceService: DeviceDetectorService,
               private telegramService: TelegramService,
               private configService: ConfigService) {
-    (window as any).cmd = this;
+    (window as any).cmd = { isAdmin: (arg: boolean) => this.isAdmin(arg) };
   }
 
   async ngOnInit() {

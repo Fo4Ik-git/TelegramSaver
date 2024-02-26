@@ -1,20 +1,21 @@
 import {InputDocument} from "../InputDocument/InputDocument";
-import {query} from "@angular/animations";
+import {InputMedia} from "./InputMedia";
 
-export class InputMediaDocument{
-  id !: InputDocument;
-  spoiler?: boolean = true;
+export class InputMediaDocument extends InputMedia{
+  _: string = 'inputMediaDocument';
   flags?: number;
+  spoiler?: boolean;
+  id!: InputDocument;
   ttl_seconds?: number;
   query?: string;
-  _ = 'inputMediaDocument';
 
-
-  constructor(id: InputDocument, spoiler?: boolean, flags?: number, ttl_seconds?: number, query?: string) {
+  constructor(id: InputDocument, optional?:{flags?: number, spoiler?: boolean, ttl_seconds?: number, query?: string}) {
+    super();
+    this.flags = optional?.flags;
+    this.spoiler = optional?.spoiler;
     this.id = id;
-    this.spoiler = spoiler;
-    this.flags = flags;
-    this.ttl_seconds = ttl_seconds;
-    this.query = query;
+    this.ttl_seconds = optional?.ttl_seconds;
+    this.query = optional?.query;
   }
+
 }

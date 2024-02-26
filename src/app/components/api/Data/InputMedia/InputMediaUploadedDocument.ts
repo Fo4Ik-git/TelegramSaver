@@ -2,8 +2,9 @@ import {InputFile} from "../InputFile/InputFile";
 import {InputFileBig} from "../InputFile/InputFileBig";
 import {DocumentAttributeFilename} from "../DocumentAttribute/DocumentAttributeFilename";
 import {DocumentAttributeVideo} from "../DocumentAttribute/DocumentAttributeVideo";
+import {InputMedia} from "./InputMedia";
 
-export class InputMediaUploadedDocument {
+export class InputMediaUploadedDocument extends InputMedia{
   flags?: number;
   nosound_video?: boolean;
   force_file?: boolean;
@@ -24,6 +25,7 @@ export class InputMediaUploadedDocument {
               thumb?: InputFile | InputFileBig,
               stickers?: any,
               ttl_seconds?: number) {
+    super();
     this.flags = flags;
     this.nosound_video = nosound_video;
     this.force_file = force_file;
@@ -34,9 +36,5 @@ export class InputMediaUploadedDocument {
     this.attributes = attributes ?? [];
     this.stickers = stickers;
     this.ttl_seconds = ttl_seconds;
-  }
-
-  toString() {
-    return JSON.stringify(this);
   }
 }

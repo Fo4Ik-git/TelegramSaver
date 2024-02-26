@@ -12,6 +12,8 @@ import {InputFile} from "../Data/InputFile/InputFile";
 import {InputFileBig} from "../Data/InputFile/InputFileBig";
 import {Md5} from "ts-md5/dist/esm/md5";
 import {ChangeDetectorRef} from "@angular/core";
+import {InputMediaDocument} from "../Data/InputMedia/InputMediaDocument";
+import {InputMedia} from "../Data/InputMedia/InputMedia";
 
 /*
 const uploadObservable: Observable<any> = from(filePartsArray).pipe(
@@ -195,7 +197,7 @@ export class Messages {
   }
 
   async sendMedia(peer: InputPeerUser | InputPeerChat,
-                  media: InputMediaUploadedDocument,
+                  media: InputMedia,
                   message: string = '',
                   random_id: number = Math.floor(Math.random() * 1000000)) {
 
@@ -219,6 +221,10 @@ export class Messages {
         mediaData = media as InputMediaUploadedDocument;
         break;
       }
+      case InputMediaDocument: {
+        mediaData = media as InputMediaDocument;
+        break;
+      }
     }
 
     return this.telegramService.call('messages.sendMedia', {
@@ -228,7 +234,7 @@ export class Messages {
         access_hash: peerData.access_hash,
       },
       media: {
-        _: mediaData._,
+        /*_: mediaData._,
         file: {
           _: mediaData.file._,
           id: mediaData.file.id,
@@ -238,7 +244,8 @@ export class Messages {
         mime_type: mediaData.mime_type,
         attributes: mediaData.attributes,
         stickers: mediaData.stickers,
-        ttl_seconds: mediaData.ttl_seconds
+        ttl_seconds: mediaData.ttl_seconds*/
+        ...mediaData
       },
       message: message,
       random_id: random_id
@@ -246,15 +253,40 @@ export class Messages {
   }
 
 
-  /*  async sendMediaToUser(username: string, file: File, message: string = '') {
-      const resolveUsername = await this.contacts.resolveUsername(username);
+  async deleteMessages(id: number[]) {
+    return this.telegramService.call('messages.deleteMessages', {
+      id: id
+    });
 
-      const uploadWorker = new Worker(new URL('../../../workers/uploadfile.worker', import.meta.url), {type: 'module'});
-      uploadWorker.postMessage({file, });
-      uploadWorker.onmessage = async ({data}) => {
-        console.log(data);
-      };
-    }*/
+  }
+
+  async editMessage(peer: InputPeerUser | InputPeerChat, id: number, optional:{no_webpage?: boolean,
+                    invert_media?: boolean, message?: string, media?: InputMediaUploadedDocument, schedule_date?: number}) {
+    let peerData: any;
+    switch (peer.constructor) {
+      case InputPeerUser: {
+        peerData = peer as InputPeerUser;
+        break;
+      }
+      case InputPeerChat: {
+        peerData = peer as InputPeerChat;
+        break;
+      }
+    }
+    return this.telegramService.call('messages.editMessage', {
+      peer: {
+        _: peerData._,
+        user_id: peerData.user_id,
+        access_hash: peerData.access_hash,
+      },
+      id: id,
+      message: optional.message,
+      media: optional.media,
+      no_webpage: optional.no_webpage,
+      invert_media: optional.invert_media,
+      schedule_date: optional.schedule_date
+    });
+  }
 
 
   async sendMediaToUser(username: string, file: File, message: string = '') {
@@ -316,7 +348,7 @@ export class Messages {
       console.log("Small file");
       const md5 = new Md5();
       const md5Hash = md5.appendStr(uint8Array.toString()).end()?.toString() as string;
-      return new InputFile(file.name, md5Hash, parts);
+      return new InputFile(file.name, parts);
     }
   }
 
@@ -344,5 +376,6 @@ export class Messages {
 
     console.timeEnd(`upload file ${inputFile.id} parts`);
   }
+
 
 }

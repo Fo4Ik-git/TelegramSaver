@@ -19,6 +19,13 @@ import {DialogModule} from "primeng/dialog";
 import {AdminPanelComponent} from "../admin-panel/admin-panel.component";
 import {Folder} from "../../config/Folder";
 import {FolderService} from "../../services/folder.service";
+import {InputMediaDocument} from "../api/Data/InputMedia/InputMediaDocument";
+import {InputDocument} from "../api/Data/InputDocument/InputDocument";
+
+interface MessageText {
+  folder: string;
+  name: string;
+}
 
 
 @Component({
@@ -243,6 +250,7 @@ export class FileExplorerComponent implements OnInit {
 
 
     this.uploadedFiles = [];
+    // TODO update files in folder
     this.isOnDrugOverCalled = false;
     this.getBotMessages();
   }
@@ -328,7 +336,7 @@ export class FileExplorerComponent implements OnInit {
     folder.isEditing = false;
   }
 
-  fileDropToFolder(folder: Folder) {
+  async fileDropToFolder(folder: Folder) {
     if (this.selectedFiles) {
       for (let file of this.selectedFiles) {
         file.folder = folder.path;
@@ -336,7 +344,36 @@ export class FileExplorerComponent implements OnInit {
         // this.folders.find((f: Folder) => f.path === file.folder)?.files?.push(file);
       }
       this.folderService.currentFolder.files = this.folderService.currentFolder.files.filter((file: any) => !this.selectedFiles.includes(file));
-      //TODO Update files in telegram
+
+      let files = this.selectedFiles.map((file: any) => file);
+      let BotPeer = await this.contacts.resolveUsername(this.telegramConfig.bot_username);
+
+      for (let file of files) {
+        let messageText: MessageText = {
+          folder: folder.path,
+          name: file.name
+        };
+        let messageString = Object.entries(messageText)
+          .map(([key, value]) => `${key}: ${value}`)
+          .join('; ');
+        let text = await this.messages.sendMedia(
+          new InputPeerUser(
+            BotPeer.users[0].id,
+            BotPeer.users[0].access_hash
+          ),
+          new InputMediaDocument(
+            new InputDocument(
+              file.media.document.id,
+              file.media.document.access_hash,
+              file.media.document.file_reference
+            )
+          ),
+          messageString
+        )
+        this.messages.deleteMessages([file.id]);
+      }
+
+
     }
 
   }
@@ -444,6 +481,7 @@ export class FileExplorerComponent implements OnInit {
   }
 
   private getFolderFromMessage(message: any) {
+
     let parts = message.split(';');
     let folderPart = parts.find((part: string) => part.trim().startsWith('folder:'));
     let folderPath = folderPart ? folderPart.split(':')[1].trim().replace(/"/g, '') : null;

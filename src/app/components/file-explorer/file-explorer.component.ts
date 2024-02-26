@@ -66,6 +66,7 @@ export class FileExplorerComponent implements OnInit {
 
 
   selectedFiles: any[] = [];
+  copiedFiles: any[] = [];
   uploadedFiles: any[] = [];
 
   @Input() isMobile!: boolean;
@@ -81,6 +82,7 @@ export class FileExplorerComponent implements OnInit {
   //Private
   protected readonly JSON = JSON;
   private ctrlPressed: boolean = false;
+  private isCopy: boolean = false;
   private timeoutId: any;
 
   constructor(private telegramService: TelegramService,
@@ -110,11 +112,31 @@ export class FileExplorerComponent implements OnInit {
 
   @HostListener('window:keydown', ['$event'])
   keyDown(event: KeyboardEvent) {
-    if (event.key === 'Control') {
-      this.ctrlPressed = true;
-    }
-    if (event.key === 'Shift') {
-      this.multiSelectMode = true;
+
+    switch (event.key) {
+      case 'Control':
+        this.ctrlPressed = true;
+        break;
+      case 'Shift':
+        this.multiSelectMode = true;
+        break;
+      case 'x':
+        if (this.ctrlPressed) {
+          this.isCopy = false;
+          this.copiedFiles = this.selectedFiles;
+        }
+        break;
+      case 'v':
+        if (this.ctrlPressed) {
+          this.fileDropToFolder(this.folderService.currentFolder);
+        }
+        break;
+      case 'c':
+        if (this.ctrlPressed) {
+          this.isCopy = true;
+          this.copiedFiles = this.selectedFiles;
+        }
+        break;
     }
   }
 
@@ -236,14 +258,14 @@ export class FileExplorerComponent implements OnInit {
       this.messages.sendMediaToUser(
         this.telegramConfig.bot_username,
         file,
-        this.folderService.currentFolder.path
+        this.getMessageText(file, this.folderService.currentFolder)
       );
     } else {
       for (let file of this.uploadedFiles) {
         this.messages.sendMediaToUser(
           this.telegramConfig.bot_username,
           file.file,
-          this.folderService.currentFolder.path
+          this.getMessageText(file, this.folderService.currentFolder)
         );
       }
     }
@@ -337,6 +359,11 @@ export class FileExplorerComponent implements OnInit {
   }
 
   async fileDropToFolder(folder: Folder) {
+
+    if (this.copiedFiles.length !== 0) {
+      this.selectedFiles = this.copiedFiles;
+    }
+
     if (this.selectedFiles) {
       for (let file of this.selectedFiles) {
         file.folder = folder.path;
@@ -349,13 +376,6 @@ export class FileExplorerComponent implements OnInit {
       let BotPeer = await this.contacts.resolveUsername(this.telegramConfig.bot_username);
 
       for (let file of files) {
-        let messageText: MessageText = {
-          folder: folder.path,
-          name: file.name
-        };
-        let messageString = Object.entries(messageText)
-          .map(([key, value]) => `${key}: ${value}`)
-          .join('; ');
         let text = await this.messages.sendMedia(
           new InputPeerUser(
             BotPeer.users[0].id,
@@ -368,14 +388,13 @@ export class FileExplorerComponent implements OnInit {
               file.media.document.file_reference
             )
           ),
-          messageString
+          this.getMessageText(file, folder)
         )
-        this.messages.deleteMessages([file.id]);
+        if(!this.isCopy){
+          this.messages.deleteMessages([file.id]);
+        }
       }
-
-
     }
-
   }
 
   dragStart(file: any) {
@@ -421,6 +440,16 @@ export class FileExplorerComponent implements OnInit {
 
   protected showAdminPanel(): void {
     this.displayDialog = true;
+  }
+
+  private getMessageText(file: any, folder: any): string {
+    let messageText: MessageText = {
+      folder: folder.path,
+      name: file.name
+    };
+    return Object.entries(messageText)
+      .map(([key, value]) => `${key}: ${value}`)
+      .join('; ');
   }
 
   private createFolders(path: string) {

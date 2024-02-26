@@ -1,12 +1,14 @@
 import {TelegramService} from "../../../services/telegram.service";
 import {telegramConfig} from "../../../config/telegram.config";
 import {ConfigService} from "../../../config/config.service";
+import {Account} from "./Account";
 
 export class Auth {
   public config: any = JSON.parse(localStorage.getItem('config') || '{}');
   configDefault = telegramConfig;
   mtProto: any;
   configService = new ConfigService();
+  account = new Account(this.telegramService);
 
   constructor(private telegramService: TelegramService) {
 
@@ -18,30 +20,10 @@ export class Auth {
     }
 
 
-    this.mtProto.updates.on('updateShort', async (updateInfo: any) => {
-      console.log('updateShort:', updateInfo);
 
-      switch (updateInfo.update._) {
-        case 'updateLoginToken': {
-          //TODO FIX error_message: 'SESSION_PASSWORD_NEEDED' 2FA add
-
-
-          let authorization = (await this.exportLoginToken()).authorization;
-          console.log('authorization:', authorization);
-          localStorage.setItem('authorization', authorization);
-
-          let user = authorization.user;
-          localStorage.setItem('user', JSON.stringify(user));
-          this.configService.saveConfig();
-
-          window.location.reload();
-          break;
-        }
-      }
-    });
   }
 
-  public async sendCode(phone: string) {
+  async sendCode(phone: string) {
     return this.telegramService.call('auth.sendCode', {
       phone_number: phone,
       settings: {
@@ -51,7 +33,7 @@ export class Auth {
   }
 
   // @ts-ignore
-  public async signIn({phone_code, phone_number, phone_code_hash}) {
+  async signIn({phone_code, phone_number, phone_code_hash}) {
     return this.telegramService.call('auth.signIn', {
       phone_number: phone_number,
       phone_code_hash: phone_code_hash,
@@ -59,16 +41,45 @@ export class Auth {
     });
   }
 
-  public async exportLoginToken() {
-    try {
-      return await this.telegramService.call('auth.exportLoginToken', {
-        api_id: this.configDefault.api_id,
-        api_hash: this.configDefault.api_hash,
-        except_ids: []
-      });
-    } catch (e) {
-      console.error(e);
-    }
+  async exportLoginToken() {
+    return await this.telegramService.call('auth.exportLoginToken', {
+      api_id: this.configDefault.api_id,
+      api_hash: this.configDefault.api_hash,
+      except_ids: []
+    });
   }
+
+  async twoFactorAuth(password: string) {
+
+    const {srp_id, current_algo, srp_B} = await this.account.getPassword();
+    const {g, p, salt1, salt2} = current_algo;
+
+    const {A, M1} = await this.telegramService.mtProto.crypto.getSRPParams({
+      g,
+      p,
+      salt1,
+      salt2,
+      gB: srp_B,
+      password,
+    });
+
+    const checkPasswordResult = await this.checkPassword({srp_id, A, M1});
+  }
+
+
+
+  private async checkPassword({srp_id, A, M1}: { srp_id: bigint, A: Uint8Array, M1: Uint8Array }) {
+    // return this.telegramService.call('auth.checkPassword', password);
+
+    return this.telegramService.call('auth.checkPassword', {
+      password: {
+        _: 'inputCheckPasswordSRP',
+        srp_id,
+        A,
+        M1,
+      },
+    });
+  }
+
 
 }

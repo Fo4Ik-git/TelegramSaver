@@ -11,6 +11,7 @@ import {FormsModule} from "@angular/forms";
 import {MessageService} from "primeng/api";
 import {ToastModule} from "primeng/toast";
 import {ConfigService} from '../../config/config.service';
+import {PasswordModule} from "primeng/password";
 
 interface SignInParams {
   phone_code: string;
@@ -30,7 +31,8 @@ interface SignInParams {
     NgOptimizedImage,
     NgClass,
     ToastModule,
-    NgTemplateOutlet
+    NgTemplateOutlet,
+    PasswordModule
   ],
   providers: [MessageService],
   templateUrl: './authentication.component.html',
@@ -47,15 +49,36 @@ export class AuthenticationComponent implements OnInit {
   auth = new Auth(this.telegramService)
   help = new Help(this.telegramService)
   loginToken: any;
+  mtProto: any;
+  isPasswordNeeded: boolean = false;
   countries: any = [];
   selectedCountry: any;
   telegramCodeValue: string = '';
   protected readonly JSON = JSON;
+  protected password: string = '';
+  private isQrLogin: boolean = false;
 
   constructor(private telegramService: TelegramService,
               private configService: ConfigService,
               private messageService: MessageService,) {
     this.telegramService.messageService = this.messageService;
+    this.mtProto = this.telegramService.mtProto;
+
+    this.telegramService.mtProto.updates.on('updateShort', async (updateInfo: any) => {
+      console.log('updateShort:', updateInfo);
+
+      switch (updateInfo.update._) {
+        case 'updateLoginToken': {
+          console.log('updateLoginToken:', updateInfo);
+          this.isQrLogin = true;
+          await this.updateLoginToken();
+
+          break;
+        }
+      }
+    });
+
+
   }
 
   async ngOnInit(): Promise<void> {
@@ -111,6 +134,7 @@ export class AuthenticationComponent implements OnInit {
     console.log('phone:', phone);
     this.signInParams.phone_number = phone;
     const {phone_code_hash} = await this.auth.sendCode(phone);
+    console.log('phone_code_hash:', phone_code_hash);
 
     this.signInParams.phone_code_hash = phone_code_hash;
     this.showTelegramCode = true;
@@ -120,14 +144,62 @@ export class AuthenticationComponent implements OnInit {
     this.signInParams.phone_code = code;
     console.log('code:', code);
 
-    let authorization = (await this.auth.signIn(this.signInParams));
-    localStorage.setItem('authorization', authorization);
-    let user = authorization.user;
-    localStorage.setItem('user', JSON.stringify(user));
-    this.configService.saveConfig();
+    try {
+      this.phoneSingIn(this.signInParams)
+    } catch (e) {
+      // @ts-ignore
+      if (e.error_message === 'SESSION_PASSWORD_NEEDED') {
+        this.isPasswordNeeded = true;
+      }
+    }
+  }
 
-    console.log('authorization:', authorization);
-    console.log('user:', user);
-    window.location.reload();
+  async updateLoginToken() {
+    try {
+      let authorization = (await this.auth.exportLoginToken()).authorization;
+      localStorage.setItem('authorization', authorization);
+
+      let user = authorization.user;
+      localStorage.setItem('user', JSON.stringify(user));
+      this.configService.saveConfig();
+
+      window.location.reload();
+    } catch (error) {
+      this.isPasswordNeeded = true;
+    }
+  }
+
+  async phoneSingIn(signInParams: SignInParams) {
+    try {
+      let authorization = (await this.auth.signIn(this.signInParams));
+      localStorage.setItem('authorization', authorization);
+      let user = authorization.user;
+      localStorage.setItem('user', JSON.stringify(user));
+      this.configService.saveConfig();
+
+      console.log('authorization:', authorization);
+      console.log('user:', user);
+      window.location.reload();
+    } catch (e) {
+      console.error('e:', e);
+      // @ts-ignore
+      if (e.error_message === 'SESSION_PASSWORD_NEEDED') {
+        this.isPasswordNeeded = true;
+      }
+    }
+  }
+
+  toggleIsMobile() {
+    if (this.showTelegramCode) this.showTelegramCode = !this.showTelegramCode;
+    this.isMobile = !this.isMobile;
+  }
+
+  async onPasswordSubmit(password: string) {
+    await this.auth.twoFactorAuth(password);
+    if (this.isQrLogin) {
+      await this.updateLoginToken();
+    } else {
+      this.phoneSingIn(this.signInParams)
+    }
   }
 }

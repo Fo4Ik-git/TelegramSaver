@@ -1,112 +1,16 @@
-<!--<h1>Telegram login</h1>
-<h2>Phone number</h2>
-
-<input #phoneNumber type="tel">
-<button (click)="onSendPhoneNumber(phoneNumber.value); phoneNumber.value = ''">Send Phone number</button>
-
-<h2>Telegram code</h2>
-<input #telegramCode type="text">
-<button (click)="onSignIn(telegramCode.value); telegramCode.value = ''">Send code</button>-->
-
-
 <div>
-  @if (!isMobile) {
-    <div class="items-center justify-center mt-4 text-center">
-
-      <div class="flex justify-center items-center">
-        <qrcode [qrdata]='qrCodeLink'
-                [width]="280"
-                [elementType]="'canvas'"
-                [margin]="2"
-                [imageSrc]="'./assets/img/telegram-icon.svg'"
-                [imageHeight]="54"
-                [imageWidth]="54"
-                [scale]="128"></qrcode>
-      </div>
-
-      <h1>Login in to Telegram by QR Code</h1>
-      <div class="flex justify-center text-start">
-        <ul class="pl-5 space-y-3 list-decimal list-inside ">
-          <li>Open Telegram on your phone</li>
-          <li>Go to Settings &gt; Devices &gt; Link Desktop Device</li>
-          <li>Point your phone at this screen to confirm login</li>
-        </ul>
-      </div>
-
-      <div class="text-center mt-4">
-        <button type="button" class="btn p-5 rounded hover:bg-primary-dark/[.5]" (click)="isMobile = true">LOG IN BY
-          PHONE
-          NUMBER
-        </button>
-      </div>
-    </div>
-
-  } @else {
-    <div class="items-center justify-center mt-4 text-center">
-      <div class="flex justify-center items-center">
-        <img src="./assets/img/telegram-icon.svg" alt="telegram logo" class="img-fluid" width="160">
-      </div>
-      <h1>Telegram</h1>
-      <p class="note">Please confirm your country code
-        and enter your phone number.</p>
-
-      <div
-        class="mb-2 mx-auto h-10 flex bg-background-dark border-2 border-solid border-splitter-light dark:border-splitter-dark rounded"
-        style="width:300px" *ngIf="!showTelegramCode">
-        <p-dropdown [options]="countries" [(ngModel)]="selectedCountry" optionLabel="name"
-                    [showClear]="false"
-                    placeholder="Select a Country">
-          <ng-template pTemplate="selectedItem">
-            <div class="flex justify-between items-center mx-2" *ngIf="selectedCountry">
-              <img [src]="'https://flagcdn.com/32x24/' + selectedCountry.code.toLowerCase() + '.png'"
-                   [class]="'flag flag-' + 'AD'" style="width: 18px"/>
-              <div>{{ selectedCountry.name }}</div>
-              <div class="mr-2">{{ selectedCountry.phone_code }}</div>
-            </div>
-          </ng-template>
-          <ng-template let-country pTemplate="item">
-            <div class="flex justify-between items-center mx-2">
-              <img [src]="'https://flagcdn.com/32x24/' + country.code.toLowerCase() + '.png'"
-                   [class]="'ml-2 flag flag-' + 'AD'" style="width: 18px"/>
-              <div>{{ country.name }}</div>
-              <div class="mr-2">{{ country.phone_code }}</div>
-            </div>
-          </ng-template>
-        </p-dropdown>
-      </div>
-      <br>
-      <input type="text"
-             class="bg-background-light dark:bg-background-dark
-             border-2 border-solid border-splitter-light dark:border-splitter-dark"
-             pInputText
-             [(ngModel)]="selectedCountry.user_phone"
-             placeholder="Phone number" *ngIf="!showTelegramCode">
-
-      <div *ngIf="showTelegramCode">
-        <input type="text" class="bg-background-light dark:bg-background-dark
-             border-2 border-solid border-splitter-light dark:border-splitter-dark"
-               pInputText #telegramCode [(ngModel)]="telegramCodeValue"
-               placeholder="Enter code from Telegram"
-               (ngModelChange)="telegramCodeValue.length == 5 ? onSignIn(telegramCodeValue) : null">
-      </div>
-
-      <br>
-
-      <button type="button" class="btn bg-primary-dark mt-3 p-5 rounded" *ngIf="!showTelegramCode"
-              (click)="onSendPhoneNumber(selectedCountry.user_phone);">Send Phone number
-      </button>
-
-
-      <div class="text-center mt-4">
-        <button type="button" class="btn p-5 rounded hover:bg-primary-dark/[.5]" (click)="isMobile = false">LOG IN BY QR
-          CODE
-        </button>
-      </div>
-    </div>
-
-
+  @if (!isMobile && !isPasswordNeeded) {
+    <ng-container *ngTemplateOutlet="qrlogin"></ng-container>
   }
-  <ng-container *ngTemplateOutlet="alertTemplate"></ng-container>
+  @if (isMobile && !isPasswordNeeded) {
+    <ng-container *ngTemplateOutlet="phoneLogin"></ng-container>
+  }
+  @if (isPasswordNeeded) {
+    <ng-container *ngTemplateOutlet="passwordCheck"></ng-container>
+  }
+
+
+
   <ng-template #alertTemplate class="mb-4">
     <div class="w-30 p-4 mx-auto my-auto" role="alert"
          style="width: 300px; z-index: 999; position: absolute; bottom: 0; left: 0;">
@@ -119,6 +23,150 @@
           will be fixed soon</p>
       </div>
     </div>
+  </ng-template>
+
+  <!--  Qr Login-->
+  <ng-template #qrlogin>
+    <div class="items-center justify-center mt-4 text-center">
+
+      <div class="flex justify-center items-center">
+        <qrcode [elementType]="'canvas'"
+                [imageHeight]="54"
+                [imageSrc]="'./assets/img/telegram-icon.svg'"
+                [imageWidth]="54"
+                [margin]="2"
+                [qrdata]='qrCodeLink'
+                [scale]="128"
+                [width]="280"></qrcode>
+      </div>
+
+      <h1>Login in to Telegram by QR Code</h1>
+      <div class="flex justify-center text-start">
+        <ul class="pl-5 space-y-3 list-decimal list-inside ">
+          <li>Open Telegram on your phone</li>
+          <li>Go to Settings &gt; Devices &gt; Link Desktop Device</li>
+          <li>Point your phone at this screen to confirm login</li>
+        </ul>
+      </div>
+
+      <div class="text-center mt-4">
+        <button (click)="toggleIsMobile()" class="btn p-5 rounded hover:bg-primary-dark/[.5]" type="button">LOG IN BY
+          PHONE
+          NUMBER
+        </button>
+      </div>
+    </div>
+  </ng-template>
+
+  <!--  Phone login-->
+  <ng-template #phoneLogin>
+    <div class="items-center justify-center mt-4 text-center">
+      <div class="flex justify-center items-center">
+        <img alt="telegram logo" class="img-fluid" src="./assets/img/telegram-icon.svg" width="160">
+      </div>
+      <h1>Telegram</h1>
+      <p class="note">Please confirm your country code
+        and enter your phone number.</p>
+
+      <div
+        *ngIf="!showTelegramCode"
+        class="mb-2 mx-auto h-10 flex bg-background-dark border-2 border-solid border-splitter-light dark:border-splitter-dark rounded"
+        style="width:300px">
+        <p-dropdown [(ngModel)]="selectedCountry" [options]="countries" [showClear]="false"
+                    optionLabel="name"
+                    placeholder="Select a Country">
+          <ng-template pTemplate="selectedItem">
+            <div *ngIf="selectedCountry" class="flex justify-between items-center mx-2">
+              <img [class]="'flag flag-' + 'AD'"
+                   [src]="'https://flagcdn.com/32x24/' + selectedCountry.code.toLowerCase() + '.png'"
+                   style="width: 18px"/>
+              <div>{{ selectedCountry.name }}</div>
+              <div class="mr-2">{{ selectedCountry.phone_code }}</div>
+            </div>
+          </ng-template>
+          <ng-template let-country pTemplate="item">
+            <div class="flex justify-between items-center mx-2">
+              <img [class]="'ml-2 flag flag-' + 'AD'"
+                   [src]="'https://flagcdn.com/32x24/' + country.code.toLowerCase() + '.png'" style="width: 18px"/>
+              <div>{{ country.name }}</div>
+              <div class="mr-2">{{ country.phone_code }}</div>
+            </div>
+          </ng-template>
+        </p-dropdown>
+      </div>
+      <br>
+      <input *ngIf="!showTelegramCode"
+             [(ngModel)]="selectedCountry.user_phone"
+             class="bg-background-light dark:bg-background-dark
+       border-2 border-solid border-splitter-light dark:border-splitter-dark"
+             pInputText pattern="[0-9]*"
+             placeholder="Phone number" type="tel">
+
+      <div *ngIf="showTelegramCode">
+        <input #telegramCode (ngModelChange)="telegramCodeValue.length == 5 ? onSignIn(telegramCodeValue) : null"
+               [(ngModel)]="telegramCodeValue" class="bg-background-light dark:bg-background-dark
+             border-2 border-solid border-splitter-light dark:border-splitter-dark" pInputText
+               placeholder="Enter code from Telegram"
+               type="text">
+      </div>
+
+      <br>
+
+      <button (click)="onSendPhoneNumber(selectedCountry.user_phone);" *ngIf="!showTelegramCode"
+              class="btn bg-primary-dark mt-3 p-5 rounded"
+              type="button">Send Phone number
+      </button>
+
+      <button (click)="onSignIn(telegramCodeValue)" *ngIf="showTelegramCode"
+              class="btn bg-primary-dark mt-3 p-5 rounded"
+              type="button">Send Code
+      </button>
+      <div class="text-center mt-4">
+        <button (click)="toggleIsMobile()" class="btn p-5 rounded hover:bg-primary-dark/[.5]" type="button">LOG IN BY QR
+          CODE
+        </button>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template #passwordCheck>
+
+
+    <div class="justify-center items-center mt-4 text-center">
+      <div class="flex justify-center items-center">
+        <img alt="telegram logo" class="img-fluid" src="./assets/img/telegram-icon.svg" width="160">
+      </div>
+      <p class="note">Please enter your password</p>
+      <div
+        class="mb-2 mx-auto h-12"
+        style="width:300px">
+        <!--<input [(ngModel)]="password" [feedback]="false"  [toggleMask]="true" class="bg-background-light dark:bg-background-dark
+             border-2 border-solid border-splitter-light dark:border-splitter-dark" pPassword
+               placeholder="Password" type="password">-->
+        <!--<p-password [(ngModel)]="password" [feedback]="false" [toggleMask]="true" class="bg-background-light dark:bg-background-dark
+             border-2 border-solid border-splitter-light dark:border-splitter-dark" placeholder="Password"></p-password>-->
+        <input
+          [(ngModel)]="password"
+          class="bg-background-light dark:bg-background-dark
+             border-2 border-solid border-splitter-light dark:border-splitter-dark"
+          id="password" name="password" placeholder="••••••••"
+          required=""
+          type="password">
+
+      </div>
+
+
+      <br>
+      <!--<button (click)="onSignInWithPassword(password)" class="btn bg-primary-dark mt-3 p-5 rounded"
+              type="button">Sign in
+      </button>-->
+
+      <button (click)="onPasswordSubmit(password);"
+              class="btn bg-primary-dark mt-3 p-5 rounded"
+              type="button">Send Password
+      </button>
+    </div>
+
   </ng-template>
 
 

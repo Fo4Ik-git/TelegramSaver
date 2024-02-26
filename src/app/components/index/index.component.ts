@@ -12,7 +12,7 @@ import {Photos} from "../api/client/Photos";
 import {Upload} from "../api/client/Upload";
 import {InputUserPhoto} from "../api/Data/InputUserPhoto/InputUserPhoto";
 import {SplitterModule} from 'primeng/splitter';
-import {clickItems, telegramConfig} from "../../config/telegram.config";
+import {telegramConfig} from "../../config/telegram.config";
 import {Help} from "../api/client/Help";
 import {FileExplorerComponent} from "../file-explorer/file-explorer.component";
 import {ContextMenuModule} from "primeng/contextmenu";
@@ -41,7 +41,6 @@ export class IndexComponent implements OnInit {
   userProfilePhoto !: string;
   messages = new Messages(this.telegramService);
   contacts = new Contacts(this.telegramService);
-  clickItems = clickItems;
   photos = new Photos(this.telegramService);
   upload = new Upload(this.telegramService);
   help = new Help(this.telegramService);

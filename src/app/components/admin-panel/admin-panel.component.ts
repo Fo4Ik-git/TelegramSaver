@@ -65,6 +65,7 @@ export class AdminPanelComponent {
     }
   }
 
+
   displayedFolders() {
     if (this.foldersQuery) {
       return this.rootFolder.folders.filter((folder: any) => folder.name.includes(this.foldersQuery));

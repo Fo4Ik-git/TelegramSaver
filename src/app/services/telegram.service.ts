@@ -18,6 +18,29 @@ export class TelegramService {
   telegramConfig = telegramConfig
   public mtProto: any;
   messageService?: MessageService
+  private errorHandlers: { [key: string]: Function } = {
+    "FLOOD_WAIT_": async (error_message: string, method: any, params: {} = {}, options: {} = {}) => {
+      const seconds = Number(error_message.split('FLOOD_WAIT_')[1]);
+      const ms = seconds * 1000;
+
+      this.notify(`Flood control: retrying in ${seconds} seconds...`);
+
+      await this.sleep(ms);
+
+      return this.call(method, params, options);
+    },
+    "SESSION_PASSWORD_NEEDED": () => {
+      this.notify('Password needed');
+    },
+    "AUTH_KEY_UNREGISTERED": () => {
+      this.notify('Auth key unregistered. Please login again.');
+      localStorage.clear();
+      window.location.reload();
+    },
+    "default": (error_message: string) => {
+      this.notify(`Error: ${error_message}`);
+    }
+  }
 
   constructor() {
     this.mtProto = new MTProto({
@@ -44,21 +67,7 @@ export class TelegramService {
       return await this.mtProto.call(method, params, options);
     } catch (error) {
       const {error_code, error_message} = error as ErrorWithDetails;
-
-      if (error_code === 420) {
-        const seconds = Number(error_message.split('FLOOD_WAIT_')[1]);
-        const ms = seconds * 1000;
-
-        this.notify('Flood control: retrying in ' + seconds + ' seconds...');
-
-        await this.sleep(ms);
-
-        return this.call(method, params, options);
-      }
-
-      this.notify('Error: ' + error_message);
-
-      return Promise.reject(error);
+      return this.handleError(error_code, error_message, method, params, options);
     }
   }
 
@@ -106,6 +115,12 @@ export class TelegramService {
         notification.remove();
       }, 3000);
     }
+  }
+
+  private async handleError(error_code: number, error_message: string, method: any, params: {} = {}, options: {} = {}): Promise<any> {
+    const handler = this.errorHandlers[error_message] || this.errorHandlers["default"];
+    handler(error_message, method, params, options);
+    return Promise.reject({error_code, error_message});
   }
 
   /**

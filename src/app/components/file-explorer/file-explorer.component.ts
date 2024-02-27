@@ -22,6 +22,7 @@ import {FolderService} from "../../services/folder.service";
 import {InputMediaDocument} from "../api/Data/InputMedia/InputMediaDocument";
 import {InputDocument} from "../api/Data/InputDocument/InputDocument";
 
+
 interface MessageText {
   folder: string;
   name: string;
@@ -112,7 +113,6 @@ export class FileExplorerComponent implements OnInit {
 
   @HostListener('window:keydown', ['$event'])
   keyDown(event: KeyboardEvent) {
-
     switch (event.key) {
       case 'Control':
         this.ctrlPressed = true;
@@ -390,10 +390,12 @@ export class FileExplorerComponent implements OnInit {
           ),
           this.getMessageText(file, folder)
         )
-        if(!this.isCopy){
-          this.messages.deleteMessages([file.id]);
+        if (!this.isCopy) {
+          await this.messages.deleteMessages([file.id]);
         }
       }
+      //TODO save path to folder
+      window.location.reload();
     }
   }
 

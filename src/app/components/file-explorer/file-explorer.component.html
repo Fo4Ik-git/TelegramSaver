@@ -1,6 +1,6 @@
-<main (click)="clearSelection($event)" class="h-full">
+<main (click)="filesService.clearSelection($event)" class="h-full">
 
-  @if (!isOnDrugOverCalled) {
+  @if (!uploadService.isOnDrugOverCalled) {
     <div>
       <!--Navigation bar-->
       <section class="flex items-center justify-between w-full p-2
@@ -10,7 +10,7 @@
         <div class="flex px-1">
           <button class="flex p-2 hover:bg-background-dark/[.1] dark:hover:bg-background-light/[.1]
         border border-transparent hover:border-primary-light dark:hover:border-primary-dark rounded"
-                  (click)="goBack()"
+                  (click)="folderService.goBack()"
                   data-tooltip-target="tooltip-back">
             <svg class="h-6 w-6 text-text-light dark:text-text-dark" width="24" height="24" viewBox="0 0 24 24"
                  stroke-width="2"
@@ -32,7 +32,7 @@
           <!--forward button-->
           <button class="flex p-2 hover:bg-background-dark/[.1] dark:hover:bg-background-light/[.1]
         border border-transparent hover:border-primary-light dark:hover:border-primary-dark rounded"
-                  (click)="goForward()"
+                  (click)="folderService.goForward()"
                   data-tooltip-target="tooltip-forward">
             <svg class="h-6 w-6 text-text-light dark:text-text-dark" width="24" height="24" viewBox="0 0 24 24"
                  stroke-width="2"
@@ -54,7 +54,7 @@
           <button *ngIf="!isMobile" class="flex p-2 hover:bg-background-dark/[.1] dark:hover:bg-background-light/[.1]
         border border-transparent hover:border-primary-light dark:hover:border-primary-dark rounded"
                   data-tooltip-target="tooltip-refresh"
-                  (click)="getBotMessages()">
+                  (click)="filesService.getBotMessages()">
             <svg class="h-6 w-6 text-text-light dark:text-text-dark" fill="none" viewBox="0 0 24 24"
                  stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -72,7 +72,7 @@
         </div>
 
         <div class="px-1 w-full" *ngIf="!isMobile">
-          <p-breadcrumb [home]="home" [model]="navigationItems"
+          <p-breadcrumb [home]="home" [model]="folderService.navigationItems"
                         styleClass="w-full bg-background-dark/[.1] dark:bg-background-light/[.1] rounded cursor-pointer"></p-breadcrumb>
         </div>
 
@@ -90,7 +90,7 @@
             <input type="search" id="default-search"
                    class="block w-full h-full p-4 ps-10 text-sm rounded-md border outline-none
                  bg-background-dark/[.1] dark:bg-background-light/[.1] focus:border-primary-light dark:focus:border-primary-dark"
-                   placeholder="Search files" [(ngModel)]="searchQuery"/>
+                   placeholder="Search files" [(ngModel)]="filesService.searchQuery"/>
           </div>
         </div>
       </section>
@@ -150,8 +150,8 @@
       @for (folder of folderService.currentFolder.folders; track folder.name) {
         <div
           class="folder flex flex-col items-center justify-center p-4 bg-white/[.3] dark:bg-black/[.3] rounded border border-transparent"
-          [ngClass]="{'selected': isFileSelected(folder)}" (click)="toggleFileSelection(folder)"
-          (dblclick)="openFolder(folder)"
+          [ngClass]="{'selected': filesService.isFileSelected(folder)}" (click)="filesService.toggleFileSelection(folder)"
+          (dblclick)="folderService.openFolder(folder)"
           (onDrop)="fileDropToFolder(folder)" pDroppable>
           <ng-container *ngTemplateOutlet="folderImage"></ng-container>
           <input *ngIf="folder.isEditing" [(ngModel)]="folder.name" (blur)="finishEditing(folder)"
@@ -161,11 +161,11 @@
         </div>
       }
 
-      @for (file of displayedFiles(); track file.name) {
+      @for (file of filesService.displayedFiles(); track file.name) {
         <div
           class="file flex flex-col items-center justify-center p-4 bg-white/[.3] dark:bg-black/[.3] rounded border border-transparent"
           pDraggable (onDragStart)="dragStart(file)"
-          [ngClass]="{'selected': isFileSelected(file)}" (click)="toggleFileSelection(file)">
+          [ngClass]="{'selected': filesService.isFileSelected(file)}" (click)="filesService.toggleFileSelection(file)">
           <img *ngIf="file.src && file.src.startsWith('data:image'); else noImage" [src]="file.src"
                class="w-12 h-12 rounded" alt="{{file.name}}">
           <p class="text-text-light dark:text-text-dark break-all select-none">{{ file.name }}</p>
@@ -175,7 +175,7 @@
     </section>
 
   } @else {
-    <div class="w-full h-full bg-white/[.1]" (drop)="onDrag($event)">
+    <div class="w-full h-full bg-white/[.1]" (drop)="uploadService.onDrag($event)">
 
       <section class="grid grid-cols-1 gap-4 py-4 px-4 bg-white/[.3]">
         <div class="flex">
@@ -189,7 +189,7 @@
             Choose files
           </button>
           <button type="button" class="flex items-center mr-4 bg-blue-500 rounded p-2 hover:bg-blue-700"
-                  (click)="onUpload()">
+                  (click)="uploadService.onUpload()">
             <svg class="h-8 w-8 text-text-light dark:text-text-dark" width="24" height="24" viewBox="0 0 24 24"
                  stroke-width="2"
                  stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -201,7 +201,7 @@
             Upload
           </button>
           <button type="button" class="flex items-center mr-4 bg-blue-500 rounded p-2 hover:bg-blue-700"
-                  (click)="onCancel()">
+                  (click)="uploadService.onCancel()">
             <svg class="h-8 w-8 text-text-light dark:text-text-dark" fill="none" viewBox="0 0 24 24"
                  stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -215,7 +215,7 @@
 
       <!--File upload-->
       <div class="file-display px-2 pt-2">
-        @if (uploadedFiles.length <= 0) {
+        @if (filesService.uploadedFiles.length <= 0) {
           <div class="flex flex-col items-center justify-center">
             <svg class="h-24 w-24 text-text-light dark:text-text-dark" viewBox="0 0 24 24" fill="none"
                  stroke="currentColor" stroke-width="2"
@@ -230,13 +230,13 @@
 
           <table class="table-auto max-w-full border-separate border-spacing-2">
             <tbody>
-            <tr *ngFor="let file of uploadedFiles; let i = index">
+            <tr *ngFor="let file of filesService.uploadedFiles; let i = index">
               <img *ngIf="file.src && file.src.startsWith('data:image'); else noImage" [src]="file.src"
                    class="w-12 h-12 rounded" alt="{{file.name}}">
               <td class="px-4 py-2 break-all">{{ file.name }}</td>
               <td class="px-4 py-2">{{ file.size }}</td>
               <td class="px-4 py-2">
-                <button (click)="removeFile(i)">
+                <button (click)="uploadService.removeFile(i)">
                   <svg class="text-text-light dark:text-text-dark" width="24" height="24" viewBox="0 0 24 24"
                        stroke-width="2"
                        stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -271,7 +271,7 @@
     </svg>
   </ng-template>
 
-  <input (change)="onDrag($event)" class="hidden" id="fileInput" multiple name="fileInput"
+  <input (change)="uploadService.onDrag($event)" class="hidden" id="fileInput" multiple name="fileInput"
          type="file">
 
   <!--TODO ADMIN DELETE--><!--[modal]="true"-->
@@ -285,4 +285,7 @@
   </p-dialog>
 
 </main>
+
+<p-contextMenu [model]="getItems()" [global]="true" ></p-contextMenu>
+
 <p-toast [breakpoints]="{'920px': {width: '100%', right: '0', left: '0'}}" [life]="2000"></p-toast>
